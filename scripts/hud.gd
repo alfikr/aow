@@ -1,0 +1,45 @@
+extends Control
+## HUD bawah + pesan sementara.
+
+var text := ""
+var text_t := 0.0
+
+
+func _ready() -> void:
+	Events.message.connect(func(t: String): text = t; text_t = 4.0)
+	Events.day_started.connect(_on_day_started)
+
+
+func _on_day_started(_passed_out: bool) -> void:
+	Events.message.emit("%s. Pendapatan kemarin: %dG." % [Clock.date_text(), Inventory.last_earned])
+
+
+func _process(delta: float) -> void:
+	text_t = maxf(0.0, text_t - delta)
+	queue_redraw()
+
+
+func _draw() -> void:
+	var player := get_tree().get_first_node_in_group("player") as Player
+	if player == null:
+		return
+	var font := ThemeDB.fallback_font
+	var y := Layout.ROWS * Layout.TILE
+	draw_rect(Rect2(0, y, Layout.COLS * Layout.TILE, Layout.HUD_H), Color(0.12, 0.1, 0.08))
+
+	var crop := player.crop_id()
+	var line1 := "%s  %s  %s   Uang: %dG" % [
+		Clock.date_text(), Clock.time_text(), Clock.WEATHER_NAMES[Clock.weather], Inventory.gold]
+	var line2 := "Alat: [1]Cangkul [2]Penyiram(air %d) [3]Benih:%s x%d (Q ganti)   Stamina: %d" % [
+		player.water, Data.crop_name(crop), Inventory.count(Inventory.seed_id(crop)), int(player.stamina)]
+	var carry := "Dibawa: "
+	for id in Inventory.items:
+		if str(id).begins_with("crop:"):
+			carry += "%s x%d  " % [Data.crop_name(str(id).trim_prefix("crop:")), Inventory.items[id]]
+	draw_string(font, Vector2(10, y + 20), line1, HORIZONTAL_ALIGNMENT_LEFT, -1, 15, Color.WHITE)
+	draw_string(font, Vector2(10, y + 40), line2, HORIZONTAL_ALIGNMENT_LEFT, -1, 15, Color(1, 0.9, 0.6))
+	draw_string(font, Vector2(10, y + 58),
+		"%s   Alat aktif: %s   [F6 simpan, F9 muat, F10 game baru]" % [carry, Player.TOOL_NAMES[player.tool]],
+		HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color(0.8, 0.9, 1))
+	if text_t > 0.0:
+		draw_string(font, Vector2(10, 22), text, HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color.WHITE)
