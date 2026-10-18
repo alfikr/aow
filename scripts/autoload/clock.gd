@@ -48,6 +48,10 @@ func _roll_weather() -> void:
 		weather = Weather.RAINY if r < 0.2 else Weather.SUNNY
 
 
+func festival() -> Dictionary:
+	return Data.festivals.get("%d-%d" % [season, day], {})
+
+
 func time_text() -> String:
 	return "%02d:%02d" % [int(minutes) / 60, int(minutes) % 60]
 

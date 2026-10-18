@@ -73,8 +73,12 @@ func harvest(c: Vector2i) -> String:
 	if not is_ripe(c):
 		return ""
 	var crop: String = tiles[c].crop
-	tiles[c].crop = ""
-	tiles[c].age = 0
+	var regrow := Data.regrow_days(crop)
+	if regrow > 0:
+		tiles[c].age = Data.growth_days(crop) - regrow
+	else:
+		tiles[c].crop = ""
+		tiles[c].age = 0
 	queue_redraw()
 	return crop
 

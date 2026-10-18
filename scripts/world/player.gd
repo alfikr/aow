@@ -7,7 +7,6 @@ enum Tool { HOE, WATER, SEED }
 const TOOL_NAMES := ["Cangkul", "Penyiram", "Benih"]
 const MOVE_TIME := 0.14
 const STAMINA_MAX := 100.0
-const WATER_MAX := 20
 const SPAWN := Layout.HOUSE_DOOR + Vector2i(0, 1)
 
 @onready var farm: Farm = $"../Farm"
@@ -18,7 +17,7 @@ var facing := Vector2i(0, -1)
 var tool := Tool.HOE
 var selected_crop := 0
 var stamina := STAMINA_MAX
-var water := WATER_MAX
+var water := Inventory.WATER_CAPACITY[0]
 var move_cd := 0.0
 
 
@@ -56,7 +55,7 @@ func walkable(c: Vector2i) -> bool:
 
 func _process(delta: float) -> void:
 	move_cd = maxf(0.0, move_cd - delta)
-	if move_cd <= 0.0:
+	if move_cd <= 0.0 and not Events.menu_open:
 		var dir := Vector2i(
 			int(Input.is_action_pressed("move_right")) - int(Input.is_action_pressed("move_left")),
 			int(Input.is_action_pressed("move_down")) - int(Input.is_action_pressed("move_up")))
@@ -72,6 +71,8 @@ func _process(delta: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if Events.menu_open:
+		return
 	if event is InputEventKey and event.pressed and not event.echo:
 		match event.keycode:
 			KEY_1: tool = Tool.HOE
@@ -94,16 +95,16 @@ func use_tool() -> void:
 	match tool:
 		Tool.HOE:
 			if farm.has_tile(c):
-				if farm.crop_at(c) == "" and spend_stamina(2):
+				if farm.crop_at(c) == "" and spend_stamina(2 * Inventory.stamina_mult("hoe")):
 					farm.untill(c)
-			elif Layout.FIELD.has_point(c) and spend_stamina(4):
+			elif Layout.FIELD.has_point(c) and spend_stamina(4 * Inventory.stamina_mult("hoe")):
 				farm.till(c)
 		Tool.WATER:
 			if not farm.has_tile(c) or farm.is_watered(c):
 				return
 			if water <= 0:
 				say("Air habis. Isi ulang di kolam.")
-			elif spend_stamina(2):
+			elif spend_stamina(2 * Inventory.stamina_mult("water")):
 				farm.water(c)
 				water -= 1
 		Tool.SEED:
@@ -129,7 +130,7 @@ func interact() -> void:
 		else:
 			say("Kamu tidak membawa hasil panen.")
 	elif c == Layout.SHOP:
-		buy_seed()
+		Events.open_shop.emit()
 	elif Layout.POND.has_point(c):
 		refill()
 	elif farm.crop_at(c) != "":
@@ -137,18 +138,8 @@ func interact() -> void:
 
 
 func refill() -> void:
-	water = WATER_MAX
+	water = Inventory.water_max()
 	say("Penyiram terisi penuh.")
-
-
-func buy_seed() -> void:
-	var id := crop_id()
-	var price := Data.seed_price(id)
-	if not Inventory.spend(price):
-		say("Uang tidak cukup untuk benih %s (%dG)." % [Data.crop_name(id), price])
-		return
-	Inventory.add(Inventory.seed_id(id))
-	say("Beli benih %s (-%dG)." % [Data.crop_name(id), price])
 
 
 func harvest(c: Vector2i) -> void:
@@ -158,7 +149,11 @@ func harvest(c: Vector2i) -> void:
 		return
 	var id := farm.harvest(c)
 	Inventory.add(Inventory.crop_id(id))
-	say("Panen %s! Masukkan ke kotak pengiriman (E)." % Data.crop_name(id))
+	var regrow := Data.regrow_days(id)
+	if regrow > 0:
+		say("Panen %s! Berbuah lagi dalam %d hari." % [Data.crop_name(id), regrow])
+	else:
+		say("Panen %s! Masukkan ke kotak pengiriman (E)." % Data.crop_name(id))
 
 
 func _on_day_started(passed_out: bool) -> void:
@@ -188,7 +183,7 @@ func load_data(d: Dictionary) -> void:
 	cell = Vector2i(int(d.get("x", cell.x)), int(d.get("y", cell.y)))
 	facing = Vector2i(int(d.get("fx", 0)), int(d.get("fy", -1)))
 	stamina = float(d.get("stamina", STAMINA_MAX))
-	water = int(d.get("water", WATER_MAX))
+	water = clampi(int(d.get("water", Inventory.water_max())), 0, Inventory.water_max())
 	tool = int(d.get("tool", 0)) as Tool
 	selected_crop = clampi(int(d.get("crop", 0)), 0, Data.crop_ids().size() - 1)
 	position = Vector2(cell * Layout.TILE)

@@ -2,12 +2,15 @@ extends Node
 ## Data statis game (dibaca dari res://data/*.json).
 
 const CROPS_PATH := "res://data/crops.json"
+const FESTIVALS_PATH := "res://data/festivals.json"
 
 var crops := {}
+var festivals := {}
 
 
 func _ready() -> void:
 	crops = _load_json(CROPS_PATH)
+	festivals = _load_json(FESTIVALS_PATH)
 
 
 func _load_json(path: String) -> Dictionary:
@@ -28,6 +31,11 @@ func crop_name(id: String) -> String:
 
 func growth_days(id: String) -> int:
 	return int(crops[id].days)
+
+
+## Hari yang dibutuhkan untuk berbuah lagi setelah panen; 0 = sekali panen.
+func regrow_days(id: String) -> int:
+	return int(crops[id].get("regrow", 0))
 
 
 func seed_price(id: String) -> int:

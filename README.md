@@ -14,6 +14,7 @@ Uji asap tanpa jendela:
 - 1 / 2 / 3: cangkul / penyiram / benih (Q ganti jenis benih)
 - Spasi: pakai alat di tile depan
 - F6 simpan, F9 muat, F10 game baru (simpan otomatis tiap pagi)
+- I: inventori. Di toko (E): W/S pilih, Enter beli benih atau upgrade alat, Esc tutup
 - E: interaksi (panen, kotak kirim, toko benih, isi air di kolam, tidur di pintu rumah)
 
 ## Alur

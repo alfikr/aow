@@ -1,0 +1,6 @@
+{
+	"0-8":  {"name": "Festival Bunga",     "sell_bonus": 0.25},
+	"1-17": {"name": "Festival Matahari",  "sell_bonus": 0.25},
+	"2-12": {"name": "Festival Panen",     "sell_bonus": 0.5},
+	"3-24": {"name": "Festival Lentera",   "sell_bonus": 0.25}
+}

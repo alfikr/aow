@@ -74,6 +74,50 @@ func _ready() -> void:
 	Clock.end_day(false)
 	check(Clock.season == 1 and farm.crop_at(c) == "", "tanaman musim semi layu saat musim panas")
 
+
+	# --- tahap 2: tanaman berulang
+	Clock.season = 1
+	Clock.day = 3
+	var c2 := Vector2i(13, 11)
+	farm.till(c2)
+	farm.plant(c2, "tomat")
+	for i in 8:
+		farm.water(c2)
+		Clock.end_day(false)
+	check(farm.is_ripe(c2), "tomat matang setelah 8 hari")
+	check(farm.harvest(c2) == "tomat", "panen tomat")
+	check(farm.crop_at(c2) == "tomat" and not farm.is_ripe(c2), "tomat tetap tumbuh setelah panen")
+	for i in 3:
+		farm.water(c2)
+		Clock.end_day(false)
+	check(farm.is_ripe(c2), "tomat berbuah lagi dalam 3 hari")
+
+	# --- tahap 2: upgrade alat
+	Inventory.gold = 600
+	check(Inventory.upgrade("water") and Inventory.water_max() == 40, "upgrade penyiram -> kapasitas 40")
+	check(Inventory.gold == 100, "biaya upgrade 500G terpotong")
+	check(not Inventory.upgrade("water"), "upgrade perak gagal bila uang kurang")
+	check(is_equal_approx(Inventory.stamina_mult("water"), 0.75), "stamina lebih hemat")
+
+	# --- tahap 2: festival
+	Clock.season = 0
+	Clock.day = 8
+	check(Clock.festival().get("name", "") == "Festival Bunga", "festival hari 8 musim semi")
+	Inventory.bin = {"crop:lobak": 1}
+	var g := Inventory.gold
+	Clock.end_day(false)
+	check(Inventory.gold == g + 75, "bonus festival +25% (60 -> 75)")
+
+	# --- tahap 2: menu toko
+	var menu: Control = main.get_node("UI/Menu")
+	Inventory.gold = 100
+	menu.open(menu.Mode.SHOP)
+	check(Events.menu_open and Clock.paused, "menu toko membekukan game")
+	menu._activate(menu.entries[0])  # benih lobak 20G
+	check(Inventory.gold == 80, "beli benih dari menu")
+	menu.close()
+	check(not Events.menu_open, "menu ditutup")
+
 	SaveSystem.delete_save()
 	print("HASIL: ", "LULUS" if failures == 0 else "GAGAL (%d)" % failures)
 	get_tree().quit(failures)

@@ -15,7 +15,7 @@
 
 ## Peta jalan
 1. [x] Fondasi: autoload, data JSON, simpan/muat, uji asap.
-2. [ ] Pertanian penuh: inventori + UI, upgrade alat, tanaman berulang, festival.
+2. [x] Pertanian penuh: menu toko & inventori, upgrade alat (Dasar/Tembaga/Perak), tanaman berulang (tomat, jagung), festival musiman (bonus harga jual).
 3. [ ] Dunia: peta desa, pintu/transisi scene, toko.
 4. [ ] Hewan: ayam, sapi, anjing, kuda.
 5. [ ] NPC: jadwal, dialog, hadiah, hubungan, event.
