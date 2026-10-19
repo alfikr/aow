@@ -56,6 +56,9 @@ func _ready() -> void:
 
 	ls.add_animal("ayam")
 	ls.add_animal("sapi")
+	player.travel("home", [14, 11])
+	await _shot(out, "05b_home")
+
 	player.travel("coop", [14, 11])
 	await _shot(out, "06_coop")
 

@@ -11,6 +11,7 @@ var area_id := "farm"
 var area := {}
 var features: Array = []   # {kind, rect: Rect2i, col: Color, raw: Dictionary}
 var walk_rect := Rect2i()
+var textures := {}   # nama sprite -> Texture2D (atau null bila berkasnya belum ada)
 
 
 func _ready() -> void:
@@ -99,6 +100,10 @@ func _draw() -> void:
 		draw_rect(Rect2(Layout.FIELD.position * T, Layout.FIELD.size * T), Color(0.3, 0.58, 0.27))
 	for f in features:
 		var r := Rect2(f.rect.position * T, f.rect.size * T)
+		var tex := _sprite_for(f)
+		if tex != null:
+			draw_texture_rect(tex, r, f.raw.has("tile"))
+			continue
 		match f.kind:
 			"tree":
 				draw_rect(Rect2(r.position + Vector2(13, 18), Vector2(6, 12)), Color(0.4, 0.26, 0.12))
@@ -117,9 +122,20 @@ func _draw() -> void:
 				_label(font, r.position + Vector2(6, 20), f.raw.get("label", ""))
 			_:
 				draw_rect(r, f.col)
-				if f.kind == "exit":
+				if f.kind == "exit" and f.col.a > 0.0:
 					draw_rect(r, Color(0, 0, 0, 0.25), false, 2.0)
 				_label(font, r.position + Vector2(4, 20), f.raw.get("label", ""))
+
+
+## Sprite untuk fitur ("sprite": bentang pas rect; "tile": diulang), atau null.
+func _sprite_for(f: Dictionary) -> Texture2D:
+	var name: String = f.raw.get("sprite", f.raw.get("tile", ""))
+	if name == "":
+		return null
+	if not textures.has(name):
+		var path := "res://assets/sprites/%s.png" % name
+		textures[name] = load(path) as Texture2D if ResourceLoader.exists(path) else null
+	return textures[name]
 
 
 func _label(font: Font, pos: Vector2, text: String) -> void:

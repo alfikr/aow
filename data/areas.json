@@ -19,7 +19,8 @@
 					3
 				],
 				"color": "b3734d",
-				"label": "Rumah"
+				"label": "",
+				"sprite": "house"
 			},
 			{
 				"kind": "building",
@@ -51,8 +52,8 @@
 					1,
 					1
 				],
-				"color": "593319",
-				"label": "Pintu",
+				"color": "00000000",
+				"label": "",
 				"to": "home",
 				"spawn": [
 					14,
@@ -162,7 +163,8 @@
 					4
 				],
 				"color": "c28a5a",
-				"label": "Toko"
+				"label": "",
+				"sprite": "shop"
 			},
 			{
 				"kind": "exit",
@@ -172,8 +174,8 @@
 					1,
 					1
 				],
-				"color": "5a3a1a",
-				"label": "Pintu",
+				"color": "8a5a2b",
+				"label": "",
 				"to": "shop",
 				"spawn": [
 					14,
@@ -383,7 +385,8 @@
 					14,
 					10
 				],
-				"color": "d9bf8c"
+				"color": "d9bf8c",
+				"tile": "floor_tile"
 			},
 			{
 				"kind": "building",
@@ -394,7 +397,8 @@
 					2
 				],
 				"color": "8c5a30",
-				"label": "Rak"
+				"label": "",
+				"sprite": "shelf"
 			},
 			{
 				"kind": "building",
@@ -405,7 +409,8 @@
 					2
 				],
 				"color": "8c5a30",
-				"label": "Rak"
+				"label": "",
+				"sprite": "shelf"
 			},
 			{
 				"kind": "shop",
@@ -416,7 +421,8 @@
 					1
 				],
 				"color": "a66f33",
-				"label": "Konter (E)"
+				"label": "",
+				"sprite": "counter"
 			},
 			{
 				"kind": "exit",
@@ -555,7 +561,8 @@
 					14,
 					10
 				],
-				"color": "d8c19a"
+				"color": "d8c19a",
+				"tile": "floor_wood"
 			},
 			{
 				"kind": "sleep",
@@ -566,7 +573,8 @@
 					2
 				],
 				"color": "5b7fb8",
-				"label": "Kasur (E)"
+				"label": "",
+				"sprite": "bed"
 			},
 			{
 				"kind": "kitchen",
@@ -577,7 +585,8 @@
 					2
 				],
 				"color": "8c5a30",
-				"label": "Dapur"
+				"label": "",
+				"sprite": "kitchen"
 			},
 			{
 				"kind": "tv",
@@ -588,7 +597,8 @@
 					1
 				],
 				"color": "333333",
-				"label": "TV"
+				"label": "",
+				"sprite": "tv"
 			},
 			{
 				"kind": "exit",
@@ -627,7 +637,8 @@
 					14,
 					10
 				],
-				"color": "c8c8d0"
+				"color": "c8c8d0",
+				"tile": "floor_tile"
 			},
 			{
 				"kind": "building",
@@ -699,7 +710,8 @@
 					14,
 					10
 				],
-				"color": "d9bf8c"
+				"color": "d9bf8c",
+				"tile": "floor_wood"
 			},
 			{
 				"kind": "building",
@@ -771,7 +783,8 @@
 					14,
 					10
 				],
-				"color": "cfb99a"
+				"color": "cfb99a",
+				"tile": "floor_wood"
 			},
 			{
 				"kind": "building",
