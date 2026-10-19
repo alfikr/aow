@@ -65,9 +65,21 @@ func _ready() -> void:
 	main.get_node("Npcs").snap_all()
 	await _shot(out, "05c_hall")
 
-	player.travel("house", [14, 11])
+	for hid in ["house_raka", "house_lila", "house_dodi"]:
+		player.travel(hid, [14, 11])
+		main.get_node("Npcs").snap_all()
+		await _shot(out, "05d_" + hid)
+
+	player.travel("lane", [14, 1])
 	main.get_node("Npcs").snap_all()
-	await _shot(out, "05d_house")
+	await _shot(out, "05e_lane")
+
+	player.travel("inn", [14, 11])
+	main.get_node("Npcs").snap_all()
+	await _shot(out, "05f_inn")
+
+	player.travel("barn", [14, 11])
+	await _shot(out, "06b_barn")
 
 	player.travel("coop", [14, 11])
 	await _shot(out, "06_coop")

@@ -134,11 +134,11 @@ func _ready() -> void:
 	player.use_tool()
 	check(not farm.has_tile(player.front()), "cangkul tidak berfungsi di desa")
 
-	player.cell = Vector2i(6, 8)
+	player.cell = Vector2i(3, 8)
 	Clock.minutes = 7.0 * 60
 	player.try_move(Vector2i.UP)
-	check(world.area_id == "village" and player.cell == Vector2i(6, 8), "toko tutup jam 07:00")
-	check(world.closed_reason(Vector2i(6, 7)).contains("tutup"), "pesan toko tutup")
+	check(world.area_id == "village" and player.cell == Vector2i(3, 8), "toko tutup jam 07:00")
+	check(world.closed_reason(Vector2i(3, 7)).contains("tutup"), "pesan toko tutup")
 	Clock.minutes = 10.0 * 60
 	player.try_move(Vector2i.UP)
 	check(world.area_id == "shop" and player.cell == Vector2i(14, 11), "toko buka jam 10:00 -> masuk interior")
@@ -152,7 +152,7 @@ func _ready() -> void:
 
 	player.cell = Vector2i(14, 11)
 	player.try_move(Vector2i.DOWN)
-	check(world.area_id == "village" and player.cell == Vector2i(6, 8), "keluar toko -> desa")
+	check(world.area_id == "village" and player.cell == Vector2i(3, 8), "keluar toko -> desa")
 
 	SaveSystem.save_game()
 	world.set_area("farm")
@@ -338,6 +338,47 @@ func _ready() -> void:
 	npcs._advance("mira")
 	check(npcs.where["mira"].cell == Vector2i(4, 9), "NPC melangkah satu tile per giliran")
 	npcs.snap_all()
+
+
+	# --- rumah warga yang berbeda-beda & penginapan/kandang
+	player.travel("village", [14, 14])
+	player.cell = Vector2i(14, 14)
+	player.try_move(Vector2i.DOWN)
+	check(world.area_id == "lane" and player.cell == Vector2i(14, 1), "desa -> permukiman")
+	var homes := {"raka": "house_raka", "lila": "house_lila", "dodi": "house_dodi"}
+	var door_cells := {"house_raka": Vector2i(3, 7), "house_lila": Vector2i(9, 7), "house_dodi": Vector2i(19, 7)}
+	for hid in door_cells:
+		player.travel("lane", [door_cells[hid].x, 8])
+		player.cell = Vector2i(door_cells[hid].x, 8)
+		player.try_move(Vector2i.UP)
+		check(world.area_id == hid, "pintu rumah menuju %s" % hid)
+		player.cell = Vector2i(14, 11)
+		player.try_move(Vector2i.DOWN)
+		check(world.area_id == "lane" and player.cell.y == 8, "keluar %s ke permukiman" % hid)
+	var own_area := {}
+	for nid in homes:
+		for e in Data.npcs[nid].schedule:
+			if e.area.begins_with("house"):
+				own_area[nid] = e.area
+	check(own_area == homes, "Raka, Lila, dan Dodi masing-masing punya rumah sendiri")
+	check(not Data.areas.has("house"), "tidak ada lagi satu rumah warga bersama")
+
+	player.travel("village", [10, 8])
+	player.cell = Vector2i(10, 8)
+	player.try_move(Vector2i.UP)
+	check(world.area_id == "inn" and player.cell == Vector2i(14, 11), "penginapan di deretan utara desa")
+	player.cell = Vector2i(14, 11)
+	player.try_move(Vector2i.DOWN)
+	check(world.area_id == "village" and player.cell == Vector2i(10, 8), "keluar penginapan -> desa")
+
+	player.travel("farm", [3, 15])
+	player.cell = Vector2i(3, 15)
+	player.try_move(Vector2i.UP)
+	check(world.area_id == "barn", "pintu ganda lumbung sapi (tile 3)")
+	player.travel("farm", [4, 15])
+	player.cell = Vector2i(4, 15)
+	player.try_move(Vector2i.UP)
+	check(world.area_id == "barn", "pintu ganda lumbung sapi (tile 4)")
 
 	# dialog lewat menu
 	Inventory.add("crop:lobak")

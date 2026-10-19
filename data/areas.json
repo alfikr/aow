@@ -31,7 +31,8 @@
 					3
 				],
 				"color": "d9b36b",
-				"label": "Kandang Ayam"
+				"label": "",
+				"sprite": "coop"
 			},
 			{
 				"kind": "building",
@@ -42,7 +43,8 @@
 					3
 				],
 				"color": "a05a3c",
-				"label": "Kandang Sapi"
+				"label": "",
+				"sprite": "barn"
 			},
 			{
 				"kind": "exit",
@@ -107,8 +109,8 @@
 					1,
 					1
 				],
-				"color": "5a3a1a",
-				"label": "Pintu",
+				"color": "8a5a2b",
+				"label": "",
 				"to": "coop",
 				"spawn": [
 					14,
@@ -120,11 +122,11 @@
 				"rect": [
 					3,
 					14,
-					1,
+					2,
 					1
 				],
-				"color": "5a3a1a",
-				"label": "Pintu",
+				"color": "8a5a2b",
+				"label": "",
 				"to": "barn",
 				"spawn": [
 					14,
@@ -157,7 +159,7 @@
 			{
 				"kind": "building",
 				"rect": [
-					4,
+					1,
 					3,
 					6,
 					4
@@ -167,9 +169,37 @@
 				"sprite": "shop"
 			},
 			{
+				"kind": "building",
+				"rect": [
+					8,
+					3,
+					5,
+					4
+				],
+				"color": "efd48e",
+				"sprite": "inn",
+				"label": ""
+			},
+			{
 				"kind": "exit",
 				"rect": [
-					6,
+					10,
+					7,
+					1,
+					1
+				],
+				"color": "8a5a2b",
+				"label": "",
+				"to": "inn",
+				"spawn": [
+					14,
+					11
+				]
+			},
+			{
+				"kind": "exit",
+				"rect": [
+					3,
 					7,
 					1,
 					1
@@ -198,40 +228,6 @@
 				"color": "9aa0a8",
 				"label": "",
 				"sprite": "hall"
-			},
-			{
-				"kind": "building",
-				"rect": [
-					23,
-					3,
-					4,
-					4
-				],
-				"color": "b88a6a",
-				"label": "",
-				"sprite": "resident_house"
-			},
-			{
-				"kind": "building",
-				"rect": [
-					4,
-					12,
-					5,
-					3
-				],
-				"color": "b88a6a",
-				"label": "Penginapan"
-			},
-			{
-				"kind": "water",
-				"rect": [
-					13,
-					12,
-					3,
-					2
-				],
-				"color": "3373d9",
-				"label": "Air Mancur"
 			},
 			{
 				"kind": "tree",
@@ -304,38 +300,6 @@
 			{
 				"kind": "exit",
 				"rect": [
-					24,
-					7,
-					1,
-					1
-				],
-				"color": "8a5a2b",
-				"label": "",
-				"to": "house",
-				"spawn": [
-					14,
-					11
-				]
-			},
-			{
-				"kind": "exit",
-				"rect": [
-					6,
-					11,
-					1,
-					1
-				],
-				"color": "5a3a1a",
-				"label": "Pintu",
-				"to": "inn",
-				"spawn": [
-					14,
-					11
-				]
-			},
-			{
-				"kind": "exit",
-				"rect": [
 					29,
 					8,
 					1,
@@ -365,6 +329,87 @@
 					12
 				],
 				"floor": 1
+			},
+			{
+				"kind": "water",
+				"rect": [
+					9,
+					12,
+					3,
+					2
+				],
+				"color": "3373d9",
+				"label": "Air Mancur"
+			},
+			{
+				"kind": "tree",
+				"rect": [
+					23,
+					4,
+					1,
+					1
+				]
+			},
+			{
+				"kind": "tree",
+				"rect": [
+					26,
+					3,
+					1,
+					1
+				]
+			},
+			{
+				"kind": "tree",
+				"rect": [
+					25,
+					6,
+					1,
+					1
+				]
+			},
+			{
+				"kind": "tree",
+				"rect": [
+					22,
+					5,
+					1,
+					1
+				]
+			},
+			{
+				"kind": "tree",
+				"rect": [
+					4,
+					12,
+					1,
+					1
+				]
+			},
+			{
+				"kind": "tree",
+				"rect": [
+					7,
+					13,
+					1,
+					1
+				]
+			},
+			{
+				"kind": "exit",
+				"rect": [
+					13,
+					15,
+					4,
+					1
+				],
+				"color": "cdb07a",
+				"label": "Permukiman",
+				"to": "lane",
+				"spawn": [
+					14,
+					1
+				]
 			}
 		]
 	},
@@ -438,7 +483,7 @@
 				"label": "Keluar",
 				"to": "village",
 				"spawn": [
-					6,
+					3,
 					8
 				]
 			}
@@ -463,7 +508,8 @@
 					10,
 					9
 				],
-				"color": "c9a96e"
+				"color": "c9a96e",
+				"tile": "floor_straw"
 			},
 			{
 				"kind": "building",
@@ -474,7 +520,19 @@
 					1
 				],
 				"color": "7a5230",
-				"label": "Palung"
+				"label": "",
+				"sprite": "trough_coop"
+			},
+			{
+				"kind": "building",
+				"rect": [
+					18,
+					10,
+					2,
+					2
+				],
+				"color": "e0b84a",
+				"sprite": "hay"
 			},
 			{
 				"kind": "exit",
@@ -513,7 +571,8 @@
 					14,
 					10
 				],
-				"color": "b89a68"
+				"color": "b89a68",
+				"tile": "floor_barn"
 			},
 			{
 				"kind": "building",
@@ -524,7 +583,30 @@
 					1
 				],
 				"color": "7a5230",
-				"label": "Palung"
+				"label": "",
+				"sprite": "trough_barn"
+			},
+			{
+				"kind": "building",
+				"rect": [
+					8,
+					10,
+					2,
+					2
+				],
+				"color": "e0b84a",
+				"sprite": "hay"
+			},
+			{
+				"kind": "building",
+				"rect": [
+					20,
+					10,
+					2,
+					2
+				],
+				"color": "e0b84a",
+				"sprite": "hay"
 			},
 			{
 				"kind": "exit",
@@ -727,7 +809,8 @@
 					1
 				],
 				"color": "7a5230",
-				"label": "Resepsionis"
+				"label": "",
+				"sprite": "inn_desk"
 			},
 			{
 				"kind": "building",
@@ -738,7 +821,8 @@
 					1
 				],
 				"color": "8c5a30",
-				"label": "Meja"
+				"label": "",
+				"sprite": "inn_table"
 			},
 			{
 				"kind": "building",
@@ -749,7 +833,8 @@
 					1
 				],
 				"color": "8c5a30",
-				"label": "Meja"
+				"label": "",
+				"sprite": "inn_table"
 			},
 			{
 				"kind": "exit",
@@ -763,71 +848,7 @@
 				"label": "Keluar",
 				"to": "village",
 				"spawn": [
-					6,
-					10
-				]
-			}
-		]
-	},
-	"house": {
-		"name": "Rumah Warga",
-		"indoor": true,
-		"ground": "2b2118",
-		"walkable": [
-			8,
-			3,
-			14,
-			10
-		],
-		"features": [
-			{
-				"kind": "floor",
-				"rect": [
-					8,
-					3,
-					14,
-					10
-				],
-				"color": "cfb99a",
-				"tile": "floor_wood"
-			},
-			{
-				"kind": "building",
-				"rect": [
-					14,
-					6,
-					3,
-					2
-				],
-				"color": "8c5a30",
-				"label": "",
-				"sprite": "table"
-			},
-			{
-				"kind": "building",
-				"rect": [
-					8,
-					3,
-					3,
-					2
-				],
-				"color": "6e86a8",
-				"label": "",
-				"sprite": "bed_green"
-			},
-			{
-				"kind": "exit",
-				"rect": [
-					14,
-					12,
-					2,
-					1
-				],
-				"color": "5a3a1a",
-				"label": "Keluar",
-				"to": "village",
-				"spawn": [
-					24,
+					10,
 					8
 				]
 			}
@@ -912,5 +933,451 @@
 			12
 		],
 		"features": []
+	},
+	"lane": {
+		"name": "Permukiman",
+		"indoor": false,
+		"ground": "59a64d",
+		"walkable": [
+			0,
+			0,
+			30,
+			16
+		],
+		"features": [
+			{
+				"kind": "path",
+				"rect": [
+					0,
+					8,
+					30,
+					3
+				],
+				"color": "cdb07a"
+			},
+			{
+				"kind": "path",
+				"rect": [
+					13,
+					0,
+					3,
+					8
+				],
+				"color": "cdb07a"
+			},
+			{
+				"kind": "building",
+				"rect": [
+					1,
+					3,
+					5,
+					4
+				],
+				"color": "a8743e",
+				"sprite": "house_raka",
+				"label": ""
+			},
+			{
+				"kind": "exit",
+				"rect": [
+					3,
+					7,
+					1,
+					1
+				],
+				"color": "8a5a2b",
+				"label": "",
+				"to": "house_raka",
+				"spawn": [
+					14,
+					11
+				]
+			},
+			{
+				"kind": "building",
+				"rect": [
+					8,
+					3,
+					4,
+					4
+				],
+				"color": "f2dcc6",
+				"sprite": "house_lila",
+				"label": ""
+			},
+			{
+				"kind": "exit",
+				"rect": [
+					9,
+					7,
+					1,
+					1
+				],
+				"color": "8a5a2b",
+				"label": "",
+				"to": "house_lila",
+				"spawn": [
+					14,
+					11
+				]
+			},
+			{
+				"kind": "building",
+				"rect": [
+					17,
+					3,
+					6,
+					4
+				],
+				"color": "b5573e",
+				"sprite": "house_dodi",
+				"label": ""
+			},
+			{
+				"kind": "exit",
+				"rect": [
+					19,
+					7,
+					2,
+					1
+				],
+				"color": "8a5a2b",
+				"label": "",
+				"to": "house_dodi",
+				"spawn": [
+					14,
+					11
+				]
+			},
+			{
+				"kind": "water",
+				"rect": [
+					13,
+					12,
+					2,
+					2
+				],
+				"color": "6a8a9a",
+				"label": "Sumur"
+			},
+			{
+				"kind": "tree",
+				"rect": [
+					3,
+					12,
+					1,
+					1
+				]
+			},
+			{
+				"kind": "tree",
+				"rect": [
+					6,
+					13,
+					1,
+					1
+				]
+			},
+			{
+				"kind": "tree",
+				"rect": [
+					9,
+					12,
+					1,
+					1
+				]
+			},
+			{
+				"kind": "tree",
+				"rect": [
+					19,
+					12,
+					1,
+					1
+				]
+			},
+			{
+				"kind": "tree",
+				"rect": [
+					23,
+					13,
+					1,
+					1
+				]
+			},
+			{
+				"kind": "tree",
+				"rect": [
+					26,
+					4,
+					1,
+					1
+				]
+			},
+			{
+				"kind": "tree",
+				"rect": [
+					27,
+					6,
+					1,
+					1
+				]
+			},
+			{
+				"kind": "tree",
+				"rect": [
+					25,
+					12,
+					1,
+					1
+				]
+			},
+			{
+				"kind": "exit",
+				"rect": [
+					13,
+					0,
+					3,
+					1
+				],
+				"color": "cdb07a",
+				"label": "Desa",
+				"to": "village",
+				"spawn": [
+					14,
+					14
+				]
+			}
+		]
+	},
+	"house_raka": {
+		"name": "Rumah Raka",
+		"indoor": true,
+		"ground": "2b2118",
+		"walkable": [
+			8,
+			3,
+			14,
+			10
+		],
+		"features": [
+			{
+				"kind": "floor",
+				"rect": [
+					8,
+					3,
+					14,
+					10
+				],
+				"color": "d8c19a",
+				"tile": "floor_wood"
+			},
+			{
+				"kind": "building",
+				"rect": [
+					8,
+					3,
+					3,
+					2
+				],
+				"color": "c8863a",
+				"sprite": "bed_farmer"
+			},
+			{
+				"kind": "building",
+				"rect": [
+					14,
+					6,
+					3,
+					2
+				],
+				"color": "8c5a30",
+				"sprite": "table_plain"
+			},
+			{
+				"kind": "building",
+				"rect": [
+					19,
+					3,
+					2,
+					2
+				],
+				"color": "d8c08a",
+				"sprite": "sacks"
+			},
+			{
+				"kind": "exit",
+				"rect": [
+					14,
+					12,
+					2,
+					1
+				],
+				"color": "5a3a1a",
+				"label": "Keluar",
+				"to": "lane",
+				"spawn": [
+					3,
+					8
+				]
+			}
+		]
+	},
+	"house_lila": {
+		"name": "Rumah Nenek Lila",
+		"indoor": true,
+		"ground": "2b2118",
+		"walkable": [
+			8,
+			3,
+			14,
+			10
+		],
+		"features": [
+			{
+				"kind": "floor",
+				"rect": [
+					8,
+					3,
+					14,
+					10
+				],
+				"color": "d8c19a",
+				"tile": "floor_wood"
+			},
+			{
+				"kind": "building",
+				"rect": [
+					8,
+					3,
+					3,
+					2
+				],
+				"color": "d9709a",
+				"sprite": "bed_pink"
+			},
+			{
+				"kind": "building",
+				"rect": [
+					14,
+					6,
+					3,
+					2
+				],
+				"color": "8c5a30",
+				"sprite": "table"
+			},
+			{
+				"kind": "building",
+				"rect": [
+					19,
+					3,
+					3,
+					2
+				],
+				"color": "8c5a30",
+				"sprite": "shelf"
+			},
+			{
+				"kind": "building",
+				"rect": [
+					18,
+					7,
+					2,
+					2
+				],
+				"color": "c07088",
+				"sprite": "armchair"
+			},
+			{
+				"kind": "exit",
+				"rect": [
+					14,
+					12,
+					2,
+					1
+				],
+				"color": "5a3a1a",
+				"label": "Keluar",
+				"to": "lane",
+				"spawn": [
+					9,
+					8
+				]
+			}
+		]
+	},
+	"house_dodi": {
+		"name": "Rumah Pak Dodi",
+		"indoor": true,
+		"ground": "2b2118",
+		"walkable": [
+			8,
+			3,
+			14,
+			10
+		],
+		"features": [
+			{
+				"kind": "floor",
+				"rect": [
+					8,
+					3,
+					14,
+					10
+				],
+				"color": "d8c19a",
+				"tile": "floor_tile"
+			},
+			{
+				"kind": "building",
+				"rect": [
+					8,
+					3,
+					3,
+					2
+				],
+				"color": "3a2616",
+				"sprite": "bookshelf"
+			},
+			{
+				"kind": "building",
+				"rect": [
+					14,
+					4,
+					3,
+					2
+				],
+				"color": "8c5a30",
+				"sprite": "desk"
+			},
+			{
+				"kind": "building",
+				"rect": [
+					19,
+					3,
+					3,
+					2
+				],
+				"color": "7a5ab8",
+				"sprite": "bed_purple"
+			},
+			{
+				"kind": "exit",
+				"rect": [
+					14,
+					12,
+					2,
+					1
+				],
+				"color": "5a3a1a",
+				"label": "Keluar",
+				"to": "lane",
+				"spawn": [
+					19,
+					8
+				]
+			}
+		]
 	}
 }

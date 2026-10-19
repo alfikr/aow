@@ -7,7 +7,7 @@ enum Mode { NONE, SHOP, INVENTORY, DIALOG, COOK, ENDING, PAUSE, SETTINGS, HELP }
 
 const PANEL := Rect2(120, 40, 720, 440)
 const BODY_H := 96.0
-const HELP_TEXT := "WASD / panah: jalan\nSpasi: pakai alat di tile depan (atau tarik pancing)\n1 cangkul   2 penyiram   3 benih   4 pancing   Q ganti jenis benih\nE: bicara, panen, ambil produk, buka pintu benda, tidur di kasur, masak di dapur\nI: inventori (Enter pada masakan untuk makan)   Esc: menu jeda   F11: layar penuh\n\nSiram tanaman tiap hari, panen, lalu masukkan ke kotak kirim (E). Uang diterima saat tidur.\nToko ada di desa (timur peternakan), buka 09:00-18:00. Tambang di utara desa, pantai di timur."
+const HELP_TEXT := "WASD / panah: jalan\nSpasi: pakai alat di tile depan (atau tarik pancing)\n1 cangkul   2 penyiram   3 benih   4 pancing   Q ganti jenis benih\nE: bicara, panen, ambil produk, buka pintu benda, tidur di kasur, masak di dapur\nI: inventori (Enter pada masakan untuk makan)   Esc: menu jeda   F11: layar penuh\n\nSiram tanaman tiap hari, panen, lalu masukkan ke kotak kirim (E). Uang diterima saat tidur.\nToko ada di desa (timur peternakan), buka 09:00-18:00. Tambang di utara desa, pantai di timur, rumah warga di selatan (Permukiman)."
 
 var mode := Mode.NONE
 var return_to := Mode.NONE   # mode tujuan saat Esc dari Pengaturan/Bantuan

@@ -2,7 +2,7 @@
 
 Game simulasi pertanian 2D (Godot 4, GDScript), **terinspirasi** dari *Harvest Moon: Back to Nature*.
 Proyek penggemar: dunia, nama, dan karakternya orisinal. Semua aset dibuat lewat kode dan bebas lisensi (CC0):
-- rumah, toko, balai desa, rumah warga, dan isi interiornya memakai sprite pixel-art (`tools/gen_sprites.py`); penginapan dan kandang masih placeholder berbentuk kotak;
+- semua bangunan (rumah, kandang ayam, lumbung sapi, toko, penginapan, balai desa, tiga rumah warga) dan isi interiornya memakai sprite pixel-art (`tools/gen_sprites.py`); karakter dan hewan masih placeholder;
 - semua suara disintesis (`tools/gen_audio.py`).
 
 Tidak memakai aset game aslinya.
@@ -38,7 +38,7 @@ Hasilnya satu berkas (`build/lembah-panen.x86_64`, sekitar 70 MB).
 ## Cara bermain
 - **Bertani:** cangkul, tanam, siram tiap hari, panen, masukkan ke kotak kirim (E). Uang diterima saat tidur.
   4 musim × 30 hari; tanaman layu bila musim berganti. Tomat dan jagung berbuah berulang.
-- **Desa:** toko (09:00-18:00) menjual benih, pakan, hewan, upgrade alat, dan Bulu Biru. Tambang di utara, pantai di timur.
+- **Desa:** toko (09:00-18:00) menjual benih, pakan, hewan, upgrade alat, dan Bulu Biru. Di deretan utara ada toko, penginapan, dan balai desa; tambang di utara, pantai di timur, dan **Permukiman** di selatan (rumah Raka, Nenek Lila, dan Pak Dodi, masing-masing berbeda).
 - **Hewan:** ayam dan sapi (beri pakan tiap hari, ambil telur/susu), plus anjing yang mengikutimu.
 - **Warga:** 5 NPC dengan jadwal harian, dialog musiman, hadiah (tiap orang punya selera dan ulang tahun), 10 hati, event hati.
 - **Tambang:** 10 lantai; pecahkan batu dengan cangkul. Bijih tembaga/perak dipakai untuk upgrade alat.

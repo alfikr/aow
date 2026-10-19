@@ -55,7 +55,7 @@ func _ready() -> void:
 				for y in r.size.y:
 					if solid_at(id, r.position + Vector2i(x, y)):
 						bad("%s: pintu '%s' berada di tile yang solid/di luar area" % [id, f.get("label", "")])
-	for id in ["village", "farm"]:
+	for id in ["village", "farm", "lane"]:
 		for f in Data.areas[id].features:
 			if f.kind == "exit" and f.to != "mine":
 				var back := false

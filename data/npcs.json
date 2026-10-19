@@ -1,10 +1,27 @@
 {
 	"npcs": {
 		"mira": {
-			"name": "Mira", "color": "e0709a", "hair": "5a3020", "romance": true, "birthday": [1, 5],
-			"loves": ["crop:tomat", "dish:salad_tomat"],
-			"likes": ["prod:telur", "prod:susu", "crop:lobak", "crop:labu"],
-			"hates": ["stone"],
+			"name": "Mira",
+			"color": "e0709a",
+			"hair": "5a3020",
+			"romance": true,
+			"birthday": [
+				1,
+				5
+			],
+			"loves": [
+				"crop:tomat",
+				"dish:salad_tomat"
+			],
+			"likes": [
+				"prod:telur",
+				"prod:susu",
+				"crop:lobak",
+				"crop:labu"
+			],
+			"hates": [
+				"stone"
+			],
 			"reactions": {
 				"love": "Wah, ini favoritku! Terima kasih banyak!",
 				"like": "Oh, bagus sekali. Terima kasih ya!",
@@ -12,35 +29,138 @@
 				"hate": "Hmm... kenapa kamu memberiku ini?"
 			},
 			"schedule": [
-				{"from": 360, "to": 1200, "area": "shop", "cell": [13, 4], "rain": true},
-				{"from": 360, "to": 540, "area": "village", "cell": [7, 9]},
-				{"from": 540, "to": 1080, "area": "shop", "cell": [14, 4]},
-				{"from": 1080, "to": 1320, "area": "village", "cell": [15, 9]},
-				{"from": 1320, "to": 1440, "area": "inn", "cell": [10, 10]}
+				{
+					"from": 360,
+					"to": 1200,
+					"area": "shop",
+					"cell": [
+						13,
+						4
+					],
+					"rain": true
+				},
+				{
+					"from": 360,
+					"to": 540,
+					"area": "village",
+					"cell": [
+						4,
+						9
+					]
+				},
+				{
+					"from": 540,
+					"to": 1080,
+					"area": "shop",
+					"cell": [
+						14,
+						4
+					]
+				},
+				{
+					"from": 1080,
+					"to": 1320,
+					"area": "village",
+					"cell": [
+						15,
+						9
+					]
+				},
+				{
+					"from": 1320,
+					"to": 1440,
+					"area": "inn",
+					"cell": [
+						10,
+						10
+					]
+				}
 			],
 			"lines": {
-				"default": ["Selamat datang! Benihnya baru datang pagi ini.", "Toko ini warisan keluargaku. Aku suka menjaganya.", "Kalau butuh pakan atau benih, tanya saja."],
-				"semi": ["Musim semi! Bunga-bunga di desa mulai mekar."],
-				"panas": ["Panas sekali... tapi tomat jadi manis."],
-				"gugur": ["Labu-labu mulai dipanen. Aku suka aromanya."],
-				"dingin": ["Brrr... pakai jaket, ya."],
-				"rain": ["Hujan begini enaknya di dalam toko."],
-				"festival": ["Ada festival hari ini! Kamu datang?"],
-				"h4": ["Aku senang kamu sering mampir."],
-				"h8": ["Entah kenapa, hari terasa lebih cerah kalau ada kamu."],
-				"spouse": ["Selamat pagi, sayang. Jangan lupa makan, ya."]
+				"default": [
+					"Selamat datang! Benihnya baru datang pagi ini.",
+					"Toko ini warisan keluargaku. Aku suka menjaganya.",
+					"Kalau butuh pakan atau benih, tanya saja."
+				],
+				"semi": [
+					"Musim semi! Bunga-bunga di desa mulai mekar."
+				],
+				"panas": [
+					"Panas sekali... tapi tomat jadi manis."
+				],
+				"gugur": [
+					"Labu-labu mulai dipanen. Aku suka aromanya."
+				],
+				"dingin": [
+					"Brrr... pakai jaket, ya."
+				],
+				"rain": [
+					"Hujan begini enaknya di dalam toko."
+				],
+				"festival": [
+					"Ada festival hari ini! Kamu datang?"
+				],
+				"h4": [
+					"Aku senang kamu sering mampir."
+				],
+				"h8": [
+					"Entah kenapa, hari terasa lebih cerah kalau ada kamu."
+				],
+				"spouse": [
+					"Selamat pagi, sayang. Jangan lupa makan, ya."
+				]
 			},
 			"events": [
-				{"id": "mira_2", "hearts": 2, "lines": ["Mira: Kamu tahu? Dulu toko ini sepi sekali.", "Mira: Sejak kamu pindah ke peternakan, jadi lebih ramai. Terima kasih!"]},
-				{"id": "mira_4", "hearts": 4, "lines": ["Mira: Ini resep salad tomat keluargaku. Mau coba?", "(Kamu mempelajari resep Salad Tomat!)"], "reward": {"recipe": "salad_tomat"}},
-				{"id": "mira_8", "hearts": 8, "lines": ["Mira: Aku... merasa nyaman bersamamu.", "Mira: Kalau suatu hari kamu membawa Bulu Biru, aku tahu artinya."]}
+				{
+					"id": "mira_2",
+					"hearts": 2,
+					"lines": [
+						"Mira: Kamu tahu? Dulu toko ini sepi sekali.",
+						"Mira: Sejak kamu pindah ke peternakan, jadi lebih ramai. Terima kasih!"
+					]
+				},
+				{
+					"id": "mira_4",
+					"hearts": 4,
+					"lines": [
+						"Mira: Ini resep salad tomat keluargaku. Mau coba?",
+						"(Kamu mempelajari resep Salad Tomat!)"
+					],
+					"reward": {
+						"recipe": "salad_tomat"
+					}
+				},
+				{
+					"id": "mira_8",
+					"hearts": 8,
+					"lines": [
+						"Mira: Aku... merasa nyaman bersamamu.",
+						"Mira: Kalau suatu hari kamu membawa Bulu Biru, aku tahu artinya."
+					]
+				}
 			]
 		},
 		"sari": {
-			"name": "Sari", "color": "6fb5a0", "hair": "2a2a40", "romance": true, "birthday": [2, 20],
-			"loves": ["fish:ikan_mas", "dish:ikan_bakar"],
-			"likes": ["crop:kentang", "prod:susu", "crop:jagung"],
-			"hates": ["stone"],
+			"name": "Sari",
+			"color": "6fb5a0",
+			"hair": "2a2a40",
+			"romance": true,
+			"birthday": [
+				2,
+				20
+			],
+			"loves": [
+				"fish:ikan_mas",
+				"dish:ikan_bakar"
+			],
+			"likes": [
+				"crop:kentang",
+				"prod:susu",
+				"crop:jagung"
+			],
+			"hates": [
+				"stone"
+			],
 			"reactions": {
 				"love": "Astaga, ini luar biasa! Kamu tahu seleraku!",
 				"like": "Wah, terima kasih! Aku suka sekali.",
@@ -48,32 +168,119 @@
 				"hate": "Eh... ini bukan kesukaanku."
 			},
 			"schedule": [
-				{"from": 600, "to": 960, "area": "village", "cell": [10, 9], "days": [6]},
-				{"from": 360, "to": 1320, "area": "inn", "cell": [14, 4]},
-				{"from": 1320, "to": 1440, "area": "inn", "cell": [19, 8]}
+				{
+					"from": 600,
+					"to": 960,
+					"area": "village",
+					"cell": [
+						10,
+						9
+					],
+					"days": [
+						6
+					]
+				},
+				{
+					"from": 360,
+					"to": 1320,
+					"area": "inn",
+					"cell": [
+						14,
+						4
+					]
+				},
+				{
+					"from": 1320,
+					"to": 1440,
+					"area": "inn",
+					"cell": [
+						19,
+						8
+					]
+				}
 			],
 			"lines": {
-				"default": ["Penginapan ini selalu siap menerima tamu.", "Aku suka memasak untuk para pengelana.", "Kalau lelah, istirahatlah. Tidur itu penting."],
-				"semi": ["Musim semi bikin tamu berdatangan."],
-				"panas": ["Ikan bakar paling enak waktu musim panas."],
-				"gugur": ["Daun-daun berguguran. Syahdu, ya."],
-				"dingin": ["Aku buat sup hangat hari ini."],
-				"rain": ["Hujan deras. Untung tamu-tamuku sudah di dalam."],
-				"festival": ["Aku sibuk menyiapkan makanan festival!"],
-				"h4": ["Kamu orang yang menyenangkan diajak bicara."],
-				"h8": ["Aku berharap kamu sering mampir."],
-				"spouse": ["Aku sudah siapkan sarapan untukmu."]
+				"default": [
+					"Penginapan ini selalu siap menerima tamu.",
+					"Aku suka memasak untuk para pengelana.",
+					"Kalau lelah, istirahatlah. Tidur itu penting."
+				],
+				"semi": [
+					"Musim semi bikin tamu berdatangan."
+				],
+				"panas": [
+					"Ikan bakar paling enak waktu musim panas."
+				],
+				"gugur": [
+					"Daun-daun berguguran. Syahdu, ya."
+				],
+				"dingin": [
+					"Aku buat sup hangat hari ini."
+				],
+				"rain": [
+					"Hujan deras. Untung tamu-tamuku sudah di dalam."
+				],
+				"festival": [
+					"Aku sibuk menyiapkan makanan festival!"
+				],
+				"h4": [
+					"Kamu orang yang menyenangkan diajak bicara."
+				],
+				"h8": [
+					"Aku berharap kamu sering mampir."
+				],
+				"spouse": [
+					"Aku sudah siapkan sarapan untukmu."
+				]
 			},
 			"events": [
-				{"id": "sari_2", "hearts": 2, "lines": ["Sari: Dulu aku pengelana, lho.", "Sari: Lalu aku jatuh cinta pada desa ini dan menetap."]},
-				{"id": "sari_4", "hearts": 4, "lines": ["Sari: Coba resep ikan bakarku. Rahasia dapurku!", "(Kamu mempelajari resep Ikan Bakar!)"], "reward": {"recipe": "ikan_bakar"}},
-				{"id": "sari_8", "hearts": 8, "lines": ["Sari: Kamu membuatku betah di sini.", "Sari: Kalau kamu serius, bawa Bulu Biru untukku."]}
+				{
+					"id": "sari_2",
+					"hearts": 2,
+					"lines": [
+						"Sari: Dulu aku pengelana, lho.",
+						"Sari: Lalu aku jatuh cinta pada desa ini dan menetap."
+					]
+				},
+				{
+					"id": "sari_4",
+					"hearts": 4,
+					"lines": [
+						"Sari: Coba resep ikan bakarku. Rahasia dapurku!",
+						"(Kamu mempelajari resep Ikan Bakar!)"
+					],
+					"reward": {
+						"recipe": "ikan_bakar"
+					}
+				},
+				{
+					"id": "sari_8",
+					"hearts": 8,
+					"lines": [
+						"Sari: Kamu membuatku betah di sini.",
+						"Sari: Kalau kamu serius, bawa Bulu Biru untukku."
+					]
+				}
 			]
 		},
 		"raka": {
-			"name": "Raka", "color": "7a9a4a", "hair": "3b2a18", "romance": false, "birthday": [0, 21],
-			"loves": ["crop:jagung", "crop:kentang"],
-			"likes": ["crop:lobak", "crop:tomat", "prod:telur"],
+			"name": "Raka",
+			"color": "7a9a4a",
+			"hair": "3b2a18",
+			"romance": false,
+			"birthday": [
+				0,
+				21
+			],
+			"loves": [
+				"crop:jagung",
+				"crop:kentang"
+			],
+			"likes": [
+				"crop:lobak",
+				"crop:tomat",
+				"prod:telur"
+			],
 			"hates": [],
 			"reactions": {
 				"love": "Hahaha! Ini yang kusuka! Kamu petani sejati!",
@@ -82,32 +289,123 @@
 				"hate": "Wah... lain kali jangan, ya."
 			},
 			"schedule": [
-				{"from": 360, "to": 1440, "area": "house", "cell": [12, 6], "rain": true},
-				{"from": 360, "to": 600, "area": "village", "cell": [3, 9]},
-				{"from": 600, "to": 1020, "area": "village", "cell": [28, 10]},
-				{"from": 1020, "to": 1260, "area": "inn", "cell": [16, 8]},
-				{"from": 1260, "to": 1440, "area": "house", "cell": [12, 6]}
+				{
+					"from": 360,
+					"to": 1440,
+					"area": "house_raka",
+					"cell": [
+						12,
+						6
+					],
+					"rain": true
+				},
+				{
+					"from": 360,
+					"to": 600,
+					"area": "village",
+					"cell": [
+						3,
+						9
+					]
+				},
+				{
+					"from": 600,
+					"to": 1020,
+					"area": "village",
+					"cell": [
+						28,
+						10
+					]
+				},
+				{
+					"from": 1020,
+					"to": 1260,
+					"area": "inn",
+					"cell": [
+						16,
+						8
+					]
+				},
+				{
+					"from": 1260,
+					"to": 1440,
+					"area": "house_raka",
+					"cell": [
+						12,
+						6
+					]
+				}
 			],
 			"lines": {
-				"default": ["Tanah di sini subur. Kamu beruntung.", "Siram tanaman setiap hari, itu rahasia panen bagus.", "Aku sudah bertani sejak kecil."],
-				"semi": ["Tanam yang cepat, musim semi pendek."],
-				"panas": ["Jagung tumbuh bagus kalau cukup air."],
-				"gugur": ["Musim panen! Semoga untung banyak."],
-				"dingin": ["Musim dingin tak ada panen. Waktunya istirahat."],
-				"rain": ["Hujan! Tak usah menyiram hari ini."],
-				"festival": ["Festival! Hasil panenmu pasti laku mahal."],
-				"h4": ["Kita sama-sama petani, saling bantu ya."],
-				"h8": ["Kamu sudah seperti saudara bagiku."]
+				"default": [
+					"Tanah di sini subur. Kamu beruntung.",
+					"Siram tanaman setiap hari, itu rahasia panen bagus.",
+					"Aku sudah bertani sejak kecil."
+				],
+				"semi": [
+					"Tanam yang cepat, musim semi pendek."
+				],
+				"panas": [
+					"Jagung tumbuh bagus kalau cukup air."
+				],
+				"gugur": [
+					"Musim panen! Semoga untung banyak."
+				],
+				"dingin": [
+					"Musim dingin tak ada panen. Waktunya istirahat."
+				],
+				"rain": [
+					"Hujan! Tak usah menyiram hari ini."
+				],
+				"festival": [
+					"Festival! Hasil panenmu pasti laku mahal."
+				],
+				"h4": [
+					"Kita sama-sama petani, saling bantu ya."
+				],
+				"h8": [
+					"Kamu sudah seperti saudara bagiku."
+				]
 			},
 			"events": [
-				{"id": "raka_2", "hearts": 2, "lines": ["Raka: Kalau mau untung, pilih tanaman sesuai musim.", "Raka: Dan jangan lupa kasih pakan hewanmu tiap hari!"]},
-				{"id": "raka_5", "hearts": 5, "lines": ["Raka: Ini resep kentang panggang dari nenekku.", "(Kamu mempelajari resep Kentang Panggang!)"], "reward": {"recipe": "kentang_panggang"}}
+				{
+					"id": "raka_2",
+					"hearts": 2,
+					"lines": [
+						"Raka: Kalau mau untung, pilih tanaman sesuai musim.",
+						"Raka: Dan jangan lupa kasih pakan hewanmu tiap hari!"
+					]
+				},
+				{
+					"id": "raka_5",
+					"hearts": 5,
+					"lines": [
+						"Raka: Ini resep kentang panggang dari nenekku.",
+						"(Kamu mempelajari resep Kentang Panggang!)"
+					],
+					"reward": {
+						"recipe": "kentang_panggang"
+					}
+				}
 			]
 		},
 		"dodi": {
-			"name": "Pak Dodi", "color": "8c6bb1", "hair": "aaaaaa", "romance": false, "birthday": [3, 3],
-			"loves": ["prod:susu", "crop:labu"],
-			"likes": ["crop:kentang", "prod:telur"],
+			"name": "Pak Dodi",
+			"color": "8c6bb1",
+			"hair": "aaaaaa",
+			"romance": false,
+			"birthday": [
+				3,
+				3
+			],
+			"loves": [
+				"prod:susu",
+				"crop:labu"
+			],
+			"likes": [
+				"crop:kentang",
+				"prod:telur"
+			],
 			"hates": [],
 			"reactions": {
 				"love": "Ho ho, hadiah yang luar biasa!",
@@ -116,31 +414,121 @@
 				"hate": "Hm. Sebaiknya jangan lagi."
 			},
 			"schedule": [
-				{"from": 540, "to": 1020, "area": "hall", "cell": [14, 4], "days": [0, 1, 2, 3, 4]},
-				{"from": 480, "to": 1080, "area": "village", "cell": [12, 9], "days": [5, 6]},
-				{"from": 360, "to": 1440, "area": "house", "cell": [19, 8]}
+				{
+					"from": 540,
+					"to": 1020,
+					"area": "hall",
+					"cell": [
+						14,
+						4
+					],
+					"days": [
+						0,
+						1,
+						2,
+						3,
+						4
+					]
+				},
+				{
+					"from": 480,
+					"to": 1080,
+					"area": "village",
+					"cell": [
+						12,
+						9
+					],
+					"days": [
+						5,
+						6
+					]
+				},
+				{
+					"from": 360,
+					"to": 1440,
+					"area": "house_dodi",
+					"cell": [
+						19,
+						8
+					]
+				}
 			],
 			"lines": {
-				"default": ["Selamat datang di Balai Desa.", "Desa ini kecil, tapi hangat.", "Kami bangga punya warga baru yang rajin."],
-				"semi": ["Musim semi, awal dari semuanya."],
-				"panas": ["Panas ya. Minumlah yang banyak."],
-				"gugur": ["Panen adalah berkah."],
-				"dingin": ["Jaga kesehatanmu di musim dingin."],
-				"rain": ["Hujan membawa rezeki."],
-				"festival": ["Festival adalah jantung desa kita."],
-				"h4": ["Kamu sudah jadi bagian desa ini."],
-				"h8": ["Desa ini beruntung memilikimu."]
+				"default": [
+					"Selamat datang di Balai Desa.",
+					"Desa ini kecil, tapi hangat.",
+					"Kami bangga punya warga baru yang rajin."
+				],
+				"semi": [
+					"Musim semi, awal dari semuanya."
+				],
+				"panas": [
+					"Panas ya. Minumlah yang banyak."
+				],
+				"gugur": [
+					"Panen adalah berkah."
+				],
+				"dingin": [
+					"Jaga kesehatanmu di musim dingin."
+				],
+				"rain": [
+					"Hujan membawa rezeki."
+				],
+				"festival": [
+					"Festival adalah jantung desa kita."
+				],
+				"h4": [
+					"Kamu sudah jadi bagian desa ini."
+				],
+				"h8": [
+					"Desa ini beruntung memilikimu."
+				]
 			},
 			"events": [
-				{"id": "dodi_2", "hearts": 2, "lines": ["Pak Dodi: Selamat datang secara resmi di desa kami!", "Pak Dodi: Ini sedikit bantuan untuk memulai."], "reward": {"gold": 200}},
-				{"id": "dodi_5", "hearts": 5, "lines": ["Pak Dodi: Warga membicarakan kerja kerasmu.", "Pak Dodi: Terimalah hadiah dari desa."], "reward": {"gold": 500}}
+				{
+					"id": "dodi_2",
+					"hearts": 2,
+					"lines": [
+						"Pak Dodi: Selamat datang secara resmi di desa kami!",
+						"Pak Dodi: Ini sedikit bantuan untuk memulai."
+					],
+					"reward": {
+						"gold": 200
+					}
+				},
+				{
+					"id": "dodi_5",
+					"hearts": 5,
+					"lines": [
+						"Pak Dodi: Warga membicarakan kerja kerasmu.",
+						"Pak Dodi: Terimalah hadiah dari desa."
+					],
+					"reward": {
+						"gold": 500
+					}
+				}
 			]
 		},
 		"lila": {
-			"name": "Nenek Lila", "color": "c9a9a6", "hair": "e0e0e0", "romance": false, "birthday": [2, 9],
-			"loves": ["prod:telur", "dish:pai_labu"],
-			"likes": ["crop:labu", "crop:lobak"],
-			"hates": ["stone"],
+			"name": "Nenek Lila",
+			"color": "c9a9a6",
+			"hair": "e0e0e0",
+			"romance": false,
+			"birthday": [
+				2,
+				9
+			],
+			"loves": [
+				"prod:telur",
+				"dish:pai_labu"
+			],
+			"likes": [
+				"crop:labu",
+				"crop:lobak"
+			],
+			"hates": [
+				"stone"
+			],
 			"reactions": {
 				"love": "Ya ampun, Nenek senang sekali!",
 				"like": "Aduh, baik sekali kamu, Nak.",
@@ -148,31 +536,125 @@
 				"hate": "Eh, buat apa ini?"
 			},
 			"schedule": [
-				{"from": 360, "to": 1440, "area": "house", "cell": [10, 8], "rain": true},
-				{"from": 360, "to": 660, "area": "village", "cell": [25, 9]},
-				{"from": 660, "to": 1080, "area": "house", "cell": [10, 8]},
-				{"from": 1080, "to": 1440, "area": "house", "cell": [10, 5]}
+				{
+					"from": 360,
+					"to": 1440,
+					"area": "house_lila",
+					"cell": [
+						10,
+						8
+					],
+					"rain": true
+				},
+				{
+					"from": 360,
+					"to": 660,
+					"area": "village",
+					"cell": [
+						25,
+						9
+					]
+				},
+				{
+					"from": 660,
+					"to": 1080,
+					"area": "house_lila",
+					"cell": [
+						10,
+						8
+					]
+				},
+				{
+					"from": 1080,
+					"to": 1440,
+					"area": "house_lila",
+					"cell": [
+						10,
+						5
+					]
+				}
 			],
 			"lines": {
-				"default": ["Dulu desa ini jauh lebih sepi.", "Nenek suka duduk di sini, menikmati angin.", "Makan yang teratur, Nak."],
-				"semi": ["Bunga-bunga mekar. Indah, ya."],
-				"panas": ["Cuaca panas bikin Nenek mengantuk."],
-				"gugur": ["Daun gugur, Nenek jadi ingat masa muda."],
-				"dingin": ["Selimut tebal itu penting."],
-				"rain": ["Hujan begini sendi Nenek ngilu."],
-				"festival": ["Nenek ikut meramaikan festival, lho."],
-				"h4": ["Kamu seperti cucu Nenek sendiri."],
-				"h8": ["Nenek sayang sekali padamu, Nak."]
+				"default": [
+					"Dulu desa ini jauh lebih sepi.",
+					"Nenek suka duduk di sini, menikmati angin.",
+					"Makan yang teratur, Nak."
+				],
+				"semi": [
+					"Bunga-bunga mekar. Indah, ya."
+				],
+				"panas": [
+					"Cuaca panas bikin Nenek mengantuk."
+				],
+				"gugur": [
+					"Daun gugur, Nenek jadi ingat masa muda."
+				],
+				"dingin": [
+					"Selimut tebal itu penting."
+				],
+				"rain": [
+					"Hujan begini sendi Nenek ngilu."
+				],
+				"festival": [
+					"Nenek ikut meramaikan festival, lho."
+				],
+				"h4": [
+					"Kamu seperti cucu Nenek sendiri."
+				],
+				"h8": [
+					"Nenek sayang sekali padamu, Nak."
+				]
 			},
 			"events": [
-				{"id": "lila_2", "hearts": 2, "lines": ["Nenek Lila: Pernah dengar legenda Dewi Panen?", "Nenek Lila: Katanya dia menjaga ladang yang dirawat sepenuh hati."]},
-				{"id": "lila_5", "hearts": 5, "lines": ["Nenek Lila: Ini resep pai labu buatan Nenek.", "(Kamu mempelajari resep Pai Labu!)"], "reward": {"recipe": "pai_labu"}}
+				{
+					"id": "lila_2",
+					"hearts": 2,
+					"lines": [
+						"Nenek Lila: Pernah dengar legenda Dewi Panen?",
+						"Nenek Lila: Katanya dia menjaga ladang yang dirawat sepenuh hati."
+					]
+				},
+				{
+					"id": "lila_5",
+					"hearts": 5,
+					"lines": [
+						"Nenek Lila: Ini resep pai labu buatan Nenek.",
+						"(Kamu mempelajari resep Pai Labu!)"
+					],
+					"reward": {
+						"recipe": "pai_labu"
+					}
+				}
 			]
 		}
 	},
 	"spouse_schedule": [
-		{"from": 360, "to": 600, "area": "home", "cell": [12, 8]},
-		{"from": 600, "to": 1080, "area": "farm", "cell": [6, 5]},
-		{"from": 1080, "to": 1440, "area": "home", "cell": [15, 8]}
+		{
+			"from": 360,
+			"to": 600,
+			"area": "home",
+			"cell": [
+				12,
+				8
+			]
+		},
+		{
+			"from": 600,
+			"to": 1080,
+			"area": "farm",
+			"cell": [
+				6,
+				5
+			]
+		},
+		{
+			"from": 1080,
+			"to": 1440,
+			"area": "home",
+			"cell": [
+				15,
+				8
+			]
+		}
 	]
 }
