@@ -94,8 +94,10 @@ func _ready() -> void:
 
 	# --- tahap 2: upgrade alat
 	Inventory.gold = 600
+	check(not Inventory.upgrade("water"), "upgrade butuh bijih tembaga")
+	Inventory.add("ore:tembaga", 5)
 	check(Inventory.upgrade("water") and Inventory.water_max() == 40, "upgrade penyiram -> kapasitas 40")
-	check(Inventory.gold == 100, "biaya upgrade 500G terpotong")
+	check(Inventory.gold == 100 and Inventory.count("ore:tembaga") == 0, "biaya upgrade 500G + 5 bijih terpotong")
 	check(not Inventory.upgrade("water"), "upgrade perak gagal bila uang kurang")
 	check(is_equal_approx(Inventory.stamina_mult("water"), 0.75), "stamina lebih hemat")
 
@@ -345,6 +347,145 @@ func _ready() -> void:
 	check(kinds.has("talk") and kinds.has("gift") and kinds.has("close"), "menu dialog punya Bicara/Hadiah/Selesai")
 	menu._activate(menu.entries[0])
 	check(menu.body.begins_with("Raka"), "dialog menampilkan ucapan NPC")
+	menu.close()
+
+
+	# --- tahap 6: memancing
+	var fishing: Fishing = main.get_node("Fishing")
+	var mine: Mine = main.get_node("Mine")
+	var got := [""]
+	Events.message.connect(func(t: String): got[0] = t)
+	check(fishing.candidates("pond", 3) == ["ikan_mas"], "kolam musim dingin hanya ikan mas")
+	check(fishing.candidates("beach", 3).has("salmon") and not fishing.candidates("beach", 0).has("salmon"), "salmon hanya musim gugur/dingin")
+	Clock.season = 1
+	Clock.day = 1
+	player.travel("farm", [26, 3])
+	player.cell = Vector2i(26, 3)
+	player.facing = Vector2i.RIGHT
+	player.tool = Player.Tool.FISH
+	player.stamina = 50.0
+	player.use_tool()
+	check(fishing.state == Fishing.State.WAIT and player.stamina == 47.0, "melempar kail memakai stamina")
+	fishing.state = Fishing.State.BITE
+	player.use_tool()
+	var fish_count := 0
+	for id in Inventory.items:
+		if str(id).begins_with("fish:"):
+			fish_count += Inventory.items[id]
+	check(fishing.state == Fishing.State.IDLE and fish_count == 1 and Progress.stats.fish == 1, "menangkap ikan saat menggigit")
+	player.use_tool()
+	player.use_tool()
+	check(fishing.state == Fishing.State.IDLE and Progress.stats.fish == 1, "menarik terlalu cepat gagal")
+	player.travel("village", [14, 11])
+	player.cell = Vector2i(14, 11)
+	player.facing = Vector2i.DOWN
+	player.use_tool()
+	check(fishing.state == Fishing.State.IDLE and got[0].contains("Tidak ada ikan"), "air mancur tidak bisa dipancing")
+
+	# --- tahap 6: tambang
+	player.travel("village", [20, 2])
+	player.cell = Vector2i(20, 2)
+	player.try_move(Vector2i.UP)
+	check(world.area_id == "mine" and mine.floor_n == 1 and player.cell == Vector2i(14, 12), "masuk tambang lantai 1")
+	var rocks: Array = world.features.filter(func(f): return f.kind == "rock")
+	check(rocks.size() > 20, "tambang berisi batu (%d)" % rocks.size())
+	var n1 := rocks.size()
+	world.set_area("mine")
+	check(world.features.filter(func(f): return f.kind == "rock").size() == n1, "tata letak lantai konsisten dalam sehari")
+	var target: Dictionary = {}
+	for f in rocks:
+		if f.raw.get("ore", "") != "":
+			target = f
+			break
+	check(not target.is_empty(), "ada batu bijih di lantai 1")
+	var ore_id := "ore:" + str(target.raw.ore)
+	var before := Inventory.count(ore_id)
+	player.stamina = 50.0
+	player.cell = target.rect.position + Vector2i.DOWN
+	player.facing = Vector2i.UP
+	player.tool = Player.Tool.HOE
+	player.use_tool()
+	check(Inventory.count(ore_id) == before + 1 and player.stamina == 47.0, "memecahkan batu bijih")
+	check(world.features.filter(func(f): return f.kind == "rock").size() == n1 - 1, "batu hilang dari peta")
+	world.set_area("mine")
+	check(world.features.filter(func(f): return f.kind == "rock").size() == n1 - 1, "batu yang pecah tetap pecah sepanjang hari")
+	check(Progress.stats.mine_floor == 1, "lantai terdalam tercatat")
+
+	var stairs: Dictionary = {}
+	for f in world.features:
+		if f.kind == "exit" and f.raw.get("label", "") == "Turun":
+			stairs = f
+	player.cell = stairs.rect.position + Vector2i.DOWN
+	player.try_move(Vector2i.UP)
+	check(mine.floor_n == 2 and world.area_id == "mine", "tangga membawa ke lantai 2")
+	mine.floor_n = 10
+	var floor10: Dictionary = mine.generate()
+	var has_down := false
+	for f in floor10.features:
+		if f.get("label", "") == "Turun":
+			has_down = true
+	check(not has_down, "lantai 10 tanpa tangga turun")
+	mine.floor_n = 1
+	Clock.end_day(false)
+	check(world.area_id == "farm", "bangun di rumah setelah tidur di tambang")
+
+	# --- tahap 6: memasak & makan
+	check(Data.item_sell_price("dish:sup_lobak") == 150, "harga jual masakan")
+	Inventory.items.erase("crop:lobak")
+	Inventory.add("crop:lobak", 2)
+	menu.open(menu.Mode.COOK)
+	check(menu.entries.size() == Progress.recipes.size(), "dapur hanya menampilkan resep yang dikuasai")
+	var cook_entry: Dictionary = {}
+	for e in menu.entries:
+		if e.arg == "sup_lobak":
+			cook_entry = e
+	menu._activate(cook_entry)
+	check(Inventory.count("dish:sup_lobak") == 1 and Inventory.count("crop:lobak") == 0 and Progress.stats.dishes == 1, "memasak sup lobak")
+	menu._activate(cook_entry)
+	check(Inventory.count("dish:sup_lobak") == 1 and menu.note.contains("tidak cukup"), "bahan kurang menolak memasak")
+	menu.close()
+	player.stamina = 10.0
+	menu.open(menu.Mode.INVENTORY)
+	var eat_entry: Dictionary = {}
+	for e in menu.entries:
+		if e.get("kind", "") == "eat":
+			eat_entry = e
+	menu._activate(eat_entry)
+	check(player.stamina == 50.0 and Inventory.count("dish:sup_lobak") == 0, "makan memulihkan stamina")
+	menu.close()
+
+	player.travel("home", [14, 11])
+	player.cell = Vector2i(19, 6)
+	player.facing = Vector2i.UP
+	player.interact()
+	check(menu.mode == menu.Mode.COOK, "dapur di rumah membuka menu masak")
+	menu.close()
+	Clock.forecast = Clock.Weather.RAINY
+	player.cell = Vector2i(14, 5)
+	player.facing = Vector2i.UP
+	player.interact()
+	check(got[0].contains("Hujan"), "TV menampilkan ramalan cuaca besok")
+	Clock.end_day(false)
+	check(Clock.weather == Clock.Weather.RAINY, "cuaca besok sesuai ramalan")
+
+	Inventory.gold = 4000
+	menu.open(menu.Mode.SHOP)
+	var feather: Dictionary = {}
+	for e in menu.entries:
+		if e.get("kind", "") == "buy":
+			feather = e
+	menu._activate(feather)
+	check(Inventory.count("gift:bulu_biru") == 1 and Inventory.gold == 1000, "membeli Bulu Biru 3000G")
+	menu.close()
+
+	# --- tahap 6: ending
+	Progress.ending_seen = false
+	Clock.year = 2
+	Clock.season = 3
+	Clock.day = 30
+	Clock.end_day(false)
+	check(Clock.year == 3 and Progress.ending_seen and menu.mode == menu.Mode.ENDING, "ending muncul setelah dua tahun")
+	check(menu.body.contains("Skor") and menu.body.contains("Mira"), "ending merangkum progres")
 	menu.close()
 
 	SaveSystem.delete_save()

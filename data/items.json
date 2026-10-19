@@ -1,7 +1,23 @@
 {
-	"stone":            {"name": "Batu",           "sell": 5},
-	"ore:tembaga":      {"name": "Bijih Tembaga",  "sell": 80},
-	"ore:perak":        {"name": "Bijih Perak",    "sell": 160},
-	"ore:emas":         {"name": "Bijih Emas",     "sell": 320},
-	"gift:bulu_biru":   {"name": "Bulu Biru",      "sell": 0}
+	"stone": {
+		"name": "Batu",
+		"sell": 5
+	},
+	"ore:tembaga": {
+		"name": "Bijih Tembaga",
+		"sell": 80
+	},
+	"ore:perak": {
+		"name": "Bijih Perak",
+		"sell": 160
+	},
+	"ore:emas": {
+		"name": "Bijih Emas",
+		"sell": 320
+	},
+	"gift:bulu_biru": {
+		"name": "Bulu Biru",
+		"sell": 0,
+		"buy": 3000
+	}
 }

@@ -20,7 +20,7 @@
 3. [x] Dunia: area berbasis data (`data/areas.json`: peternakan, desa, interior toko), pintu perpindahan, jam buka toko.
 4. [x] Hewan: ayam & sapi (kandang interior, pakan, telur/susu, kasih sayang), anjing pengikut. Kuda ditunda.
 5. [x] NPC: 5 warga (jadwal harian/cuaca/akhir pekan, jalan BFS, dialog musiman, hadiah dengan selera & ulang tahun, hati 0-10, event hati dengan hadiah, lamaran).
-6. [ ] Lanjutan: tambang, memancing, memasak, pernikahan, ending.
+6. [x] Lanjutan: memancing (kolam & pantai, musim/kelangkaan), tambang 10 lantai (bijih untuk upgrade alat), memasak (6 resep, makan pulihkan stamina), TV ramalan cuaca, pernikahan + anak, ending setelah 2 tahun.
 7. [ ] Polesan: suara, menu, export Linux.
 
 ## Risiko

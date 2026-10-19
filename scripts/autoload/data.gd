@@ -3,6 +3,8 @@ extends Node
 
 const CROPS_PATH := "res://data/crops.json"
 const ANIMALS_PATH := "res://data/animals.json"
+const FISH_PATH := "res://data/fish.json"
+const RECIPES_PATH := "res://data/recipes.json"
 const ITEMS_PATH := "res://data/items.json"
 const NPCS_PATH := "res://data/npcs.json"
 const AREAS_PATH := "res://data/areas.json"
@@ -14,6 +16,8 @@ var areas := {}
 var animals := {}
 var products := {}
 var items := {}
+var fish := {}
+var recipes := {}
 var npcs := {}
 var spouse_schedule: Array = []
 
@@ -23,6 +27,8 @@ func _ready() -> void:
 	festivals = _load_json(FESTIVALS_PATH)
 	areas = _load_json(AREAS_PATH)
 	items = _load_json(ITEMS_PATH)
+	fish = _load_json(FISH_PATH).get("fish", {})
+	recipes = _load_json(RECIPES_PATH).get("recipes", {})
 	var n := _load_json(NPCS_PATH)
 	npcs = n.get("npcs", {})
 	spouse_schedule = n.get("spouse_schedule", [])
@@ -47,6 +53,10 @@ func item_name(id: String) -> String:
 		return crop_name(id.substr(5))
 	if id.begins_with("prod:"):
 		return products[id.substr(5)].name
+	if id.begins_with("fish:"):
+		return fish[id.substr(5)].name
+	if id.begins_with("dish:"):
+		return recipes[id.substr(5)].name
 	if id.begins_with("seed:"):
 		return "Benih " + crop_name(id.substr(5))
 	if id == "feed":
@@ -61,6 +71,10 @@ func item_sell_price(id: String) -> int:
 		return sell_price(id.substr(5))
 	if id.begins_with("prod:"):
 		return int(products[id.substr(5)].sell)
+	if id.begins_with("fish:"):
+		return int(fish[id.substr(5)].sell)
+	if id.begins_with("dish:"):
+		return int(recipes[id.substr(5)].sell)
 	return 0
 
 

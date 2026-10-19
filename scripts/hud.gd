@@ -42,7 +42,7 @@ func _draw() -> void:
 	var line1 := "%s  %s  %s  [%s]   Uang: %dG" % [
 		Clock.date_text(), Clock.time_text(), Clock.WEATHER_NAMES[Clock.weather],
 		world.area_name() if world else "", Inventory.gold]
-	var line2 := "Alat: [1]Cangkul [2]Penyiram(air %d/%d) [3]Benih:%s x%d (Q ganti)   Stamina: %d" % [
+	var line2 := "Alat: [1]Cangkul [2]Penyiram(air %d/%d) [3]Benih:%s x%d (Q ganti) [4]Pancing   Stamina: %d" % [
 		player.water, Inventory.water_max(), Data.crop_name(crop), Inventory.count(Inventory.seed_id(crop)), int(player.stamina)]
 	var carry := "Dibawa: "
 	for id in Inventory.items:

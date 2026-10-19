@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=13 format=3]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/world/world.gd" id="2"]
@@ -10,6 +10,8 @@
 [ext_resource type="Script" path="res://scripts/world/livestock.gd" id="8"]
 [ext_resource type="Script" path="res://scripts/world/dog.gd" id="9"]
 [ext_resource type="Script" path="res://scripts/world/npcs.gd" id="10"]
+[ext_resource type="Script" path="res://scripts/world/fishing.gd" id="11"]
+[ext_resource type="Script" path="res://scripts/world/mine.gd" id="12"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1")
@@ -28,6 +30,12 @@ script = ExtResource("9")
 
 [node name="Npcs" type="Node2D" parent="."]
 script = ExtResource("10")
+
+[node name="Mine" type="Node" parent="."]
+script = ExtResource("12")
+
+[node name="Fishing" type="Node2D" parent="."]
+script = ExtResource("11")
 
 [node name="Player" type="Node2D" parent="."]
 script = ExtResource("4")

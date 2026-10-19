@@ -1,0 +1,10 @@
+{
+	"recipes": {
+		"sup_lobak":        {"name": "Sup Lobak",        "ingredients": {"crop:lobak": 2},                                   "stamina": 40, "sell": 150},
+		"telur_goreng":     {"name": "Telur Goreng",     "ingredients": {"prod:telur": 2},                                   "stamina": 30, "sell": 90},
+		"salad_tomat":      {"name": "Salad Tomat",      "ingredients": {"crop:tomat": 2},                                   "stamina": 60, "sell": 380},
+		"ikan_bakar":       {"name": "Ikan Bakar",       "ingredients": {"fish:ikan_mas": 1},                                "stamina": 50, "sell": 260},
+		"kentang_panggang": {"name": "Kentang Panggang", "ingredients": {"crop:kentang": 1, "prod:susu": 1},                 "stamina": 70, "sell": 300},
+		"pai_labu":         {"name": "Pai Labu",         "ingredients": {"crop:labu": 1, "prod:telur": 1, "prod:susu": 1},   "stamina": 90, "sell": 480}
+	}
+}

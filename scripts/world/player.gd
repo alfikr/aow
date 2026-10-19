@@ -2,9 +2,9 @@ class_name Player
 extends Node2D
 ## Pemain: gerak per tile, alat, stamina, dan interaksi.
 
-enum Tool { HOE, WATER, SEED }
+enum Tool { HOE, WATER, SEED, FISH }
 
-const TOOL_NAMES := ["Cangkul", "Penyiram", "Benih"]
+const TOOL_NAMES := ["Cangkul", "Penyiram", "Benih", "Pancing"]
 const MOVE_TIME := 0.14
 const STAMINA_MAX := 100.0
 const SPAWN := Vector2i(3, 4)   # tepat di depan pintu rumah
@@ -14,6 +14,8 @@ const SPAWN := Vector2i(3, 4)   # tepat di depan pintu rumah
 @onready var livestock: Livestock = $"../Livestock"
 @onready var dog: Dog = $"../Dog"
 @onready var npcs: Npcs = $"../Npcs"
+@onready var fishing: Fishing = $"../Fishing"
+@onready var mine: Mine = $"../Mine"
 
 var save_key := "player"
 var cell := Vector2i(12, 14)
@@ -71,6 +73,8 @@ func try_move(dir: Vector2i) -> void:
 		cell = target
 		var e := world.exit_at(cell)
 		if not e.is_empty():
+			if e.raw.has("floor"):
+				mine.floor_n = int(e.raw.floor)
 			travel(str(e.raw.to), e.raw.spawn)
 
 
@@ -78,6 +82,7 @@ func travel(area_id: String, spawn) -> void:
 	world.set_area(area_id)
 	cell = Vector2i(int(spawn[0]), int(spawn[1]))
 	position = Vector2(cell * Layout.TILE)
+	fishing.cancel()
 	say("Tiba di %s." % world.area_name())
 
 
@@ -90,6 +95,7 @@ func _process(delta: float) -> void:
 		if dir.x != 0:
 			dir.y = 0
 		if dir != Vector2i.ZERO:
+			fishing.cancel()
 			try_move(dir)
 			move_cd = MOVE_TIME
 	position = position.move_toward(Vector2(cell * Layout.TILE), Layout.TILE * delta / MOVE_TIME)
@@ -104,6 +110,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			KEY_1: tool = Tool.HOE
 			KEY_2: tool = Tool.WATER
 			KEY_3: tool = Tool.SEED
+			KEY_4: tool = Tool.FISH
 			KEY_Q:
 				selected_crop = (selected_crop + 1) % Data.crop_ids().size()
 				tool = Tool.SEED
@@ -114,11 +121,26 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func use_tool() -> void:
+	if fishing.state != Fishing.State.IDLE:
+		fishing.reel()
+		return
 	var c := front()
+	var feat := world.feature_at(c)
+	if feat.get("kind", "") == "rock" and tool != Tool.FISH:
+		if spend_stamina(Mine.STAMINA_COST * Inventory.stamina_mult("hoe")):
+			say(mine.break_rock(feat))
+			world.remove_feature(feat)
+		return
 	if tool == Tool.WATER and world.feature_at(c).get("kind", "") == "water":
 		refill()
 		return
 	match tool:
+		Tool.FISH:
+			var place := str(feat.get("raw", {}).get("fish", ""))
+			if place == "":
+				say("Tidak ada ikan di sini. Coba kolam di peternakan atau laut di pantai.")
+			else:
+				fishing.cast(place, c)
 		Tool.HOE:
 			if world.area_id != "farm":
 				return
@@ -173,6 +195,10 @@ func interact() -> void:
 			Events.open_shop.emit()
 		"water":
 			refill()
+		"kitchen":
+			Events.open_cook.emit()
+		"tv":
+			say("TV: Ramalan cuaca besok - %s." % Clock.WEATHER_NAMES[Clock.forecast])
 		_:
 			if world.area_id == "farm" and farm.crop_at(c) != "":
 				harvest(c)

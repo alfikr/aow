@@ -4,7 +4,7 @@ extends Node2D
 ## desa, interior toko. Menggambar pemandangan dan menjawab pertanyaan
 ## "bisa dilewati?", "ada apa di tile ini?", dan "apakah ini pintu keluar?".
 
-const SOLID_KINDS := ["building", "sleep", "bin", "water", "shop", "tree"]
+const SOLID_KINDS := ["building", "sleep", "bin", "water", "shop", "tree", "rock", "kitchen", "tv"]
 
 var save_key := "world"
 var area_id := "farm"
@@ -16,11 +16,15 @@ var walk_rect := Rect2i()
 func _ready() -> void:
 	add_to_group("saveable")
 	add_to_group("world")
+	Events.game_loaded.connect(func(): if area_id == "mine": set_area("mine"))
 	set_area(area_id)
 
 
 func set_area(id: String) -> void:
 	area_id = id
+	if id == "mine":
+		var mine := get_tree().get_first_node_in_group("mine") as Mine
+		Data.areas["mine"] = mine.generate()
 	area = Data.areas[id]
 	var w = area.walkable
 	walk_rect = Rect2i(int(w[0]), int(w[1]), int(w[2]), int(w[3]))
@@ -35,6 +39,11 @@ func set_area(id: String) -> void:
 	if farm:
 		farm.visible = id == "farm"
 	Events.area_changed.emit(id)
+	queue_redraw()
+
+
+func remove_feature(f: Dictionary) -> void:
+	features.erase(f)
 	queue_redraw()
 
 
@@ -94,6 +103,14 @@ func _draw() -> void:
 			"tree":
 				draw_rect(Rect2(r.position + Vector2(13, 18), Vector2(6, 12)), Color(0.4, 0.26, 0.12))
 				draw_circle(r.position + Vector2(16, 14), 13, Color(0.13, 0.42, 0.18))
+			"rock":
+				draw_rect(r.grow(-2), f.col)
+				draw_rect(r.grow(-2), Color(0, 0, 0, 0.25), false, 2.0)
+				var ore: String = f.raw.get("ore", "")
+				if ore != "":
+					var oc: Color = {"tembaga": Color(0.72, 0.45, 0.2), "perak": Color(0.85, 0.85, 0.92), "emas": Color(0.95, 0.8, 0.1)}[ore]
+					draw_circle(r.position + Vector2(11, 12), 4, oc)
+					draw_circle(r.position + Vector2(20, 19), 3, oc)
 			"building":
 				draw_rect(r, f.col)
 				draw_rect(Rect2(r.position, Vector2(r.size.x, T)), f.col.darkened(0.35))

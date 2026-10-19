@@ -8,6 +8,7 @@ const TOOL_KEYS := ["hoe", "water"]
 const TOOL_LABELS := {"hoe": "Cangkul", "water": "Penyiram"}
 const LEVEL_NAMES := ["Dasar", "Tembaga", "Perak"]
 const UPGRADE_COST := [0, 500, 1500]
+const UPGRADE_ORE := [{}, {"ore:tembaga": 5}, {"ore:perak": 5}]
 const STAMINA_MULT := [1.0, 0.75, 0.5]
 const WATER_CAPACITY := [20, 40, 60]
 
@@ -84,9 +85,24 @@ func next_upgrade_cost(key: String) -> int:
 	return UPGRADE_COST[tool_level(key) + 1] if can_upgrade(key) else -1
 
 
+## Bijih yang dibutuhkan untuk level berikutnya (id -> jumlah).
+func next_upgrade_ore(key: String) -> Dictionary:
+	return UPGRADE_ORE[tool_level(key) + 1] if can_upgrade(key) else {}
+
+
+func has_upgrade_ore(key: String) -> bool:
+	for id in next_upgrade_ore(key):
+		if count(id) < int(next_upgrade_ore(key)[id]):
+			return false
+	return true
+
+
 func upgrade(key: String) -> bool:
-	if not can_upgrade(key) or not spend(next_upgrade_cost(key)):
+	if not can_upgrade(key) or not has_upgrade_ore(key) or gold < next_upgrade_cost(key):
 		return false
+	spend(next_upgrade_cost(key))
+	for id in next_upgrade_ore(key):
+		remove(id, int(next_upgrade_ore(key)[id]))
 	tool_levels[key] = tool_level(key) + 1
 	return true
 

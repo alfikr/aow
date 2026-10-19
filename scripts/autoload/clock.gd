@@ -16,7 +16,12 @@ var day := 1
 var season := 0
 var year := 1
 var weather := Weather.SUNNY
+var forecast := Weather.SUNNY
 var paused := false
+
+
+func _ready() -> void:
+	forecast = _roll_weather()
 
 
 func _process(delta: float) -> void:
@@ -37,16 +42,16 @@ func end_day(passed_out: bool) -> void:
 			year += 1
 		Events.season_changed.emit(season)
 	minutes = float(DAY_START)
-	_roll_weather()
+	weather = forecast
+	forecast = _roll_weather()
 	Events.day_started.emit(passed_out)
 
 
-func _roll_weather() -> void:
+func _roll_weather() -> Weather:
 	var r := randf()
 	if season == 3:
-		weather = Weather.SNOW if r < 0.3 else Weather.SUNNY
-	else:
-		weather = Weather.RAINY if r < 0.2 else Weather.SUNNY
+		return Weather.SNOW if r < 0.3 else Weather.SUNNY
+	return Weather.RAINY if r < 0.2 else Weather.SUNNY
 
 
 func festival() -> Dictionary:
@@ -71,7 +76,7 @@ func date_text() -> String:
 
 
 func save_data() -> Dictionary:
-	return {"minutes": minutes, "day": day, "season": season, "year": year, "weather": int(weather)}
+	return {"minutes": minutes, "day": day, "season": season, "year": year, "weather": int(weather), "forecast": int(forecast)}
 
 
 func load_data(d: Dictionary) -> void:
@@ -80,3 +85,4 @@ func load_data(d: Dictionary) -> void:
 	season = int(d.get("season", 0))
 	year = int(d.get("year", 1))
 	weather = int(d.get("weather", 0)) as Weather
+	forecast = int(d.get("forecast", 0)) as Weather

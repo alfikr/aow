@@ -79,7 +79,8 @@
 					3
 				],
 				"color": "3373d9",
-				"label": "Kolam"
+				"label": "Kolam",
+				"fish": "pond"
 			},
 			{
 				"kind": "exit",
@@ -327,6 +328,39 @@
 					14,
 					11
 				]
+			},
+			{
+				"kind": "exit",
+				"rect": [
+					29,
+					8,
+					1,
+					3
+				],
+				"color": "e8dcab",
+				"label": "Pantai",
+				"to": "beach",
+				"spawn": [
+					1,
+					9
+				]
+			},
+			{
+				"kind": "exit",
+				"rect": [
+					20,
+					1,
+					2,
+					1
+				],
+				"color": "333344",
+				"label": "Tambang",
+				"to": "mine",
+				"spawn": [
+					14,
+					12
+				],
+				"floor": 1
 			}
 		]
 	},
@@ -535,7 +569,7 @@
 				"label": "Kasur (E)"
 			},
 			{
-				"kind": "building",
+				"kind": "kitchen",
 				"rect": [
 					18,
 					4,
@@ -546,7 +580,7 @@
 				"label": "Dapur"
 			},
 			{
-				"kind": "building",
+				"kind": "tv",
 				"rect": [
 					14,
 					4,
@@ -778,5 +812,85 @@
 				]
 			}
 		]
+	},
+	"beach": {
+		"name": "Pantai",
+		"indoor": false,
+		"ground": "e8dcab",
+		"walkable": [
+			0,
+			0,
+			30,
+			16
+		],
+		"features": [
+			{
+				"kind": "water",
+				"rect": [
+					14,
+					1,
+					16,
+					14
+				],
+				"color": "2f6fcf",
+				"label": "Laut",
+				"fish": "beach"
+			},
+			{
+				"kind": "tree",
+				"rect": [
+					4,
+					3,
+					1,
+					1
+				]
+			},
+			{
+				"kind": "tree",
+				"rect": [
+					7,
+					12,
+					1,
+					1
+				]
+			},
+			{
+				"kind": "tree",
+				"rect": [
+					10,
+					5,
+					1,
+					1
+				]
+			},
+			{
+				"kind": "exit",
+				"rect": [
+					0,
+					8,
+					1,
+					3
+				],
+				"color": "cdb07a",
+				"label": "Desa",
+				"to": "village",
+				"spawn": [
+					28,
+					9
+				]
+			}
+		]
+	},
+	"mine": {
+		"name": "Tambang",
+		"indoor": true,
+		"ground": "1c1c22",
+		"walkable": [
+			2,
+			2,
+			26,
+			12
+		],
+		"features": []
 	}
 }

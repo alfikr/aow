@@ -1,0 +1,10 @@
+{
+	"fish": {
+		"ikan_mas": {"name": "Ikan Mas", "sell": 100, "seasons": [0, 1, 2, 3], "places": ["pond", "beach"], "weight": 5},
+		"lele":     {"name": "Lele",     "sell": 60,  "seasons": [0, 1, 2],    "places": ["pond"],          "weight": 6},
+		"nila":     {"name": "Nila",     "sell": 80,  "seasons": [1, 2],       "places": ["pond"],          "weight": 4},
+		"sarden":   {"name": "Sarden",   "sell": 70,  "seasons": [0, 1, 2, 3], "places": ["beach"],         "weight": 6},
+		"tuna":     {"name": "Tuna",     "sell": 250, "seasons": [1, 2],       "places": ["beach"],         "weight": 2},
+		"salmon":   {"name": "Salmon",   "sell": 220, "seasons": [2, 3],       "places": ["beach"],         "weight": 2}
+	}
+}
