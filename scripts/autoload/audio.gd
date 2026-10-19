@@ -38,6 +38,16 @@ func _ready() -> void:
 	Settings.apply()
 
 
+func _exit_tree() -> void:
+	# lepaskan referensi aliran agar tidak ada peringatan resource saat keluar
+	music.stop()
+	music.stream = null
+	for p in players:
+		p.stop()
+		p.stream = null
+	sfx.clear()
+
+
 func _load(name: String) -> AudioStream:
 	var path := DIR + name + ".wav"
 	if ResourceLoader.exists(path):
