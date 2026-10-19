@@ -255,8 +255,8 @@ func _ready() -> void:
 	check(npcs.schedule_target("dodi", 12 * 60, 6, false).area == "village", "Pak Dodi di desa akhir pekan")
 
 	Clock.minutes = 10.0 * 60
+	Clock.weather = Clock.Weather.SUNNY   # harus sebelum snap_all: cuaca acak mengubah jadwal
 	npcs.snap_all()
-	Clock.weather = Clock.Weather.SUNNY
 	var wd := Clock.weekday()
 	var expected = npcs.schedule_target("mira", Clock.minutes, wd, false)
 	check(npcs.npc_at(expected.area, expected.cell) == "mira", "Mira berada di lokasi jadwalnya")
