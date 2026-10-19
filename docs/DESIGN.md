@@ -18,7 +18,7 @@
 1. [x] Fondasi: autoload, data JSON, simpan/muat, uji asap.
 2. [x] Pertanian penuh: menu toko & inventori, upgrade alat (Dasar/Tembaga/Perak), tanaman berulang (tomat, jagung), festival musiman (bonus harga jual).
 3. [x] Dunia: area berbasis data (`data/areas.json`: peternakan, desa, interior toko), pintu perpindahan, jam buka toko.
-4. [ ] Hewan: ayam, sapi, anjing, kuda.
+4. [x] Hewan: ayam & sapi (kandang interior, pakan, telur/susu, kasih sayang), anjing pengikut. Kuda ditunda.
 5. [ ] NPC: jadwal, dialog, hadiah, hubungan, event.
 6. [ ] Lanjutan: tambang, memancing, memasak, pernikahan, ending.
 7. [ ] Polesan: suara, menu, export Linux.

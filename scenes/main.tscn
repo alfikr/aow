@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/world/world.gd" id="2"]
@@ -7,6 +7,8 @@
 [ext_resource type="Script" path="res://scripts/world/night.gd" id="5"]
 [ext_resource type="Script" path="res://scripts/hud.gd" id="6"]
 [ext_resource type="Script" path="res://scripts/menu.gd" id="7"]
+[ext_resource type="Script" path="res://scripts/world/livestock.gd" id="8"]
+[ext_resource type="Script" path="res://scripts/world/dog.gd" id="9"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1")
@@ -16,6 +18,12 @@ script = ExtResource("2")
 
 [node name="Farm" type="Node2D" parent="."]
 script = ExtResource("3")
+
+[node name="Livestock" type="Node2D" parent="."]
+script = ExtResource("8")
+
+[node name="Dog" type="Node2D" parent="."]
+script = ExtResource("9")
 
 [node name="Player" type="Node2D" parent="."]
 script = ExtResource("4")

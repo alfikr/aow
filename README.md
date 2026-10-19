@@ -20,6 +20,9 @@ Uji asap tanpa jendela:
 ## Dunia
 Peternakan -> (pintu timur) -> Desa -> Toko (buka 09:00-18:00). Benih dan upgrade alat dibeli di konter toko.
 
+## Hewan
+Beli pakan, ayam (300G), dan sapi (1500G) di toko desa. Kandang ada di sisi barat peternakan. Beri pakan tiap hari (E pada hewan), ambil telur/susu keesokan harinya, lalu kirim lewat kotak kirim. Anjing mengikutimu; elus dengan E.
+
 ## Alur
 Cangkul -> tanam -> siram tiap hari -> panen setelah matang -> kirim -> tidur untuk menerima uang.
 

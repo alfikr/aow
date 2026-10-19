@@ -11,6 +11,8 @@ const SPAWN := Vector2i(3, 4)   # tepat di depan pintu rumah
 
 @onready var farm: Farm = $"../Farm"
 @onready var world: World = $"../World"
+@onready var livestock: Livestock = $"../Livestock"
+@onready var dog: Dog = $"../Dog"
 
 var save_key := "player"
 var cell := Vector2i(12, 14)
@@ -51,7 +53,7 @@ func spend_stamina(cost: float) -> bool:
 
 
 func walkable(c: Vector2i) -> bool:
-	if not world.walkable(c):
+	if not world.walkable(c) or livestock.animal_at(world.area_id, c) >= 0:
 		return false
 	return not (world.area_id == "farm" and farm.blocks(c))
 
@@ -146,14 +148,21 @@ func use_tool() -> void:
 
 func interact() -> void:
 	var c := front()
+	var ai := livestock.animal_at(world.area_id, c)
+	if ai >= 0:
+		livestock.interact(ai)
+		return
+	if dog.cell == c:
+		dog.pet()
+		return
 	match world.feature_at(c).get("kind", ""):
 		"sleep":
 			Clock.end_day(false)
 		"bin":
-			if Inventory.ship_crops() > 0:
-				say("Hasil panen dimasukkan. Dibayar saat kamu tidur.")
+			if Inventory.ship_goods() > 0:
+				say("Hasil dimasukkan. Dibayar saat kamu tidur.")
 			else:
-				say("Kamu tidak membawa hasil panen.")
+				say("Kamu tidak membawa hasil panen atau produk.")
 		"shop":
 			Events.open_shop.emit()
 		"water":

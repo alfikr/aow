@@ -160,6 +160,87 @@ func _ready() -> void:
 	Clock.end_day(false)
 	check(world.area_id == "farm" and player.cell == Player.SPAWN and farm.visible, "tidur -> bangun di rumah (peternakan)")
 
+
+	# --- tahap 4: hewan
+	var ls: Livestock = main.get_node("Livestock")
+	var dog: Dog = main.get_node("Dog")
+	Clock.season = 1
+	Clock.day = 1
+	Inventory.gold = 5000
+	menu.open(menu.Mode.SHOP)
+	var feed_entry: Dictionary = {}
+	var chick_entry: Dictionary = {}
+	for e in menu.entries:
+		if e.get("kind", "") == "feed":
+			feed_entry = e
+		if e.get("kind", "") == "animal" and e.arg == "ayam":
+			chick_entry = e
+	menu._activate(feed_entry)
+	check(Inventory.count("feed") == 1 and Inventory.gold == 4990, "beli pakan dari toko")
+	menu._activate(chick_entry)
+	check(ls.count_of("ayam") == 1 and Inventory.gold == 4690, "beli ayam dari toko")
+	menu.close()
+	for i in 3:
+		ls.add_animal("ayam")
+	check(ls.count_of("ayam") == 4 and not ls.can_add("ayam"), "kandang ayam penuh di 4 ekor")
+	ls.animals.resize(1)
+
+	player.travel("farm", [2, 10])
+	player.try_move(Vector2i.UP)
+	check(world.area_id == "coop" and player.cell == Vector2i(14, 11), "masuk kandang ayam")
+	check(ls.animal_at("coop", Vector2i(12, 7)) == 0, "ayam berada di slot rumahnya")
+
+	ls.animals[0].cell = Vector2i(12, 7)
+	player.cell = Vector2i(12, 8)
+	player.facing = Vector2i.UP
+	player.interact()
+	check(ls.animals[0].fed and Inventory.count("feed") == 0, "memberi pakan ayam")
+	check(not player.walkable(Vector2i(12, 7)), "hewan menghalangi jalan")
+
+	Clock.end_day(false)
+	check(ls.animals[0].product and ls.animals[0].affection == 4, "ayam yang diberi pakan menghasilkan telur")
+	player.travel("coop", [14, 11])
+	ls.animals[0].cell = Vector2i(12, 7)
+	player.cell = Vector2i(12, 8)
+	player.facing = Vector2i.UP
+	player.interact()
+	check(Inventory.count("prod:telur") == 1 and not ls.animals[0].product, "mengambil telur")
+
+	Clock.end_day(false)
+	check(not ls.animals[0].product and ls.animals[0].affection == 1, "tanpa pakan: tak ada telur, kasih sayang turun")
+
+	player.travel("farm", [8, 3])
+	player.facing = Vector2i.UP
+	player.interact()
+	check(Inventory.bin.get("prod:telur", 0) == 1, "telur masuk kotak kirim")
+	g = Inventory.gold
+	Clock.end_day(false)
+	check(Inventory.gold == g + 30, "telur dibayar 30G")
+
+	ls.add_animal("sapi")
+	check(ls.count_of("sapi") == 1 and ls.animal_at("barn", Vector2i(13, 7)) >= 0, "sapi masuk kandang sapi")
+
+	SaveSystem.save_game()
+	ls.animals.clear()
+	SaveSystem.load_game()
+	check(ls.count_of("ayam") == 1 and ls.count_of("sapi") == 1, "hewan tersimpan & dimuat")
+
+	# --- tahap 4: anjing
+	world.set_area("farm")
+	player.cell = Vector2i(5, 5)
+	dog._process(0.01)
+	check(dog.cell == player.cell, "anjing muncul di dekat pemain saat ganti area")
+	var steps := [Vector2i(6, 5), Vector2i(7, 5), Vector2i(8, 5), Vector2i(9, 5)]
+	for st in steps:
+		player.cell = st
+		dog._process(0.01)
+	check(dog.cell == Vector2i(6, 5), "anjing mengikuti 3 langkah di belakang")
+	player.facing = Vector2i.LEFT
+	player.cell = dog.cell + Vector2i.RIGHT
+	var af := dog.affection
+	player.interact()
+	check(dog.affection == af + 3, "mengelus anjing")
+
 	SaveSystem.delete_save()
 	print("HASIL: ", "LULUS" if failures == 0 else "GAGAL (%d)" % failures)
 	get_tree().quit(failures)

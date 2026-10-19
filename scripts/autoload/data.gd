@@ -2,18 +2,24 @@ extends Node
 ## Data statis game (dibaca dari res://data/*.json).
 
 const CROPS_PATH := "res://data/crops.json"
+const ANIMALS_PATH := "res://data/animals.json"
 const AREAS_PATH := "res://data/areas.json"
 const FESTIVALS_PATH := "res://data/festivals.json"
 
 var crops := {}
 var festivals := {}
 var areas := {}
+var animals := {}
+var products := {}
 
 
 func _ready() -> void:
 	crops = _load_json(CROPS_PATH)
 	festivals = _load_json(FESTIVALS_PATH)
 	areas = _load_json(AREAS_PATH)
+	var a := _load_json(ANIMALS_PATH)
+	animals = a.get("animals", {})
+	products = a.get("products", {})
 
 
 func _load_json(path: String) -> Dictionary:
@@ -22,6 +28,27 @@ func _load_json(path: String) -> Dictionary:
 		push_error("Gagal membaca %s" % path)
 		return {}
 	return parsed
+
+
+## Nama tampilan untuk id barang ("crop:x", "prod:x", "seed:x", "feed").
+func item_name(id: String) -> String:
+	if id.begins_with("crop:"):
+		return crop_name(id.substr(5))
+	if id.begins_with("prod:"):
+		return products[id.substr(5)].name
+	if id.begins_with("seed:"):
+		return "Benih " + crop_name(id.substr(5))
+	if id == "feed":
+		return "Pakan"
+	return id
+
+
+func item_sell_price(id: String) -> int:
+	if id.begins_with("crop:"):
+		return sell_price(id.substr(5))
+	if id.begins_with("prod:"):
+		return int(products[id.substr(5)].sell)
+	return 0
 
 
 func crop_ids() -> Array:

@@ -1,0 +1,10 @@
+{
+	"animals": {
+		"ayam": {"name": "Ayam", "price": 300,  "product": "telur", "area": "coop", "capacity": 4, "home": [12, 7], "step": 2, "color": "f5f0e0"},
+		"sapi": {"name": "Sapi", "price": 1500, "product": "susu",  "area": "barn", "capacity": 2, "home": [13, 7], "step": 3, "color": "c9a27a"}
+	},
+	"products": {
+		"telur": {"name": "Telur", "sell": 30},
+		"susu":  {"name": "Susu",  "sell": 90}
+	}
+}

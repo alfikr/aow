@@ -46,6 +46,15 @@ func _rebuild() -> void:
 			entries.append({"label": "Benih %s  %dG  (%s, %d hari%s)" % [
 				Data.crop_name(id), Data.seed_price(id), _season_text(id), Data.growth_days(id),
 				", berulang" if Data.regrow_days(id) > 0 else ""], "kind": "seed", "arg": id})
+		entries.append({"label": "Pakan ternak  %dG  (dimiliki %d)" % [Inventory.FEED_PRICE, Inventory.count("feed")],
+			"kind": "feed", "arg": "feed"})
+		var ls := get_tree().get_first_node_in_group("livestock") as Livestock
+		for type in Data.animals:
+			var info: Dictionary = Data.animals[type]
+			entries.append({"label": "Beli %s  %dG  (%s %d/%d, menghasilkan %s)" % [
+				info.name, info.price, Data.areas[info.area].name,
+				ls.count_of(type), info.capacity, Data.products[info.product].name],
+				"kind": "animal", "arg": type})
 		for k in Inventory.TOOL_KEYS:
 			var label: String = Inventory.TOOL_LABELS[k]
 			var cost := Inventory.next_upgrade_cost(k)
@@ -65,6 +74,15 @@ func _rebuild() -> void:
 			if seeds + crops + binned > 0:
 				entries.append({"label": "%s - benih %d, dibawa %d, di kotak kirim %d" % [
 					Data.crop_name(id), seeds, crops, binned]})
+		entries.append({"label": "Pakan: %d" % Inventory.count("feed")})
+		for prod in Data.products:
+			var have := Inventory.count("prod:" + prod)
+			var binned := int(Inventory.bin.get("prod:" + prod, 0))
+			if have + binned > 0:
+				entries.append({"label": "%s - dibawa %d, di kotak kirim %d" % [Data.products[prod].name, have, binned]})
+		var ls2 := get_tree().get_first_node_in_group("livestock") as Livestock
+		for a in ls2.animals:
+			entries.append({"label": "%s - kasih sayang %d%s" % [a.name, a.affection, ", ada produk" if a.product else ""]})
 		var fest := Clock.festival()
 		if not fest.is_empty():
 			entries.append({"label": "Hari ini: %s (harga jual +%d%%)" % [fest.name, roundi(float(fest.sell_bonus) * 100)]})
@@ -107,6 +125,22 @@ func _activate(e: Dictionary) -> void:
 				note = "Beli benih %s (-%dG)." % [Data.crop_name(e.arg), price]
 			else:
 				note = "Uang tidak cukup."
+		"feed":
+			if Inventory.spend(Inventory.FEED_PRICE):
+				Inventory.add("feed")
+				note = "Beli pakan (-%dG)." % Inventory.FEED_PRICE
+			else:
+				note = "Uang tidak cukup."
+		"animal":
+			var ls := get_tree().get_first_node_in_group("livestock") as Livestock
+			var info: Dictionary = Data.animals[e.arg]
+			if not ls.can_add(e.arg):
+				note = "Kandang penuh."
+			elif not Inventory.spend(int(info.price)):
+				note = "Uang tidak cukup."
+			else:
+				ls.add_animal(e.arg)
+				note = "Kamu membeli %s! Beri pakan setiap hari." % info.name
 		"upgrade":
 			if Inventory.upgrade(e.arg):
 				note = "%s ditingkatkan ke %s!" % [Inventory.TOOL_LABELS[e.arg], Inventory.LEVEL_NAMES[Inventory.tool_level(e.arg)]]

@@ -3,6 +3,7 @@ extends Node
 ## ID barang: "seed:<tanaman>" dan "crop:<tanaman>".
 
 const START_GOLD := 300
+const FEED_PRICE := 10
 const TOOL_KEYS := ["hoe", "water"]
 const TOOL_LABELS := {"hoe": "Cangkul", "water": "Penyiram"}
 const LEVEL_NAMES := ["Dasar", "Tembaga", "Perak"]
@@ -90,11 +91,11 @@ func upgrade(key: String) -> bool:
 	return true
 
 
-## Pindahkan semua hasil panen yang dibawa ke kotak pengiriman.
-func ship_crops() -> int:
+## Pindahkan semua hasil panen dan produk ternak yang dibawa ke kotak pengiriman.
+func ship_goods() -> int:
 	var moved := 0
 	for id in items.keys():
-		if str(id).begins_with("crop:"):
+		if str(id).begins_with("crop:") or str(id).begins_with("prod:"):
 			bin[id] = int(bin.get(id, 0)) + items[id]
 			moved += items[id]
 			items.erase(id)
@@ -105,7 +106,7 @@ func _on_day_ended(_passed_out: bool) -> void:
 	var total := 0
 	var bonus := 1.0 + float(Clock.festival().get("sell_bonus", 0.0))
 	for id in bin:
-		total += roundi(int(bin[id]) * Data.sell_price(str(id).trim_prefix("crop:")) * bonus)
+		total += roundi(int(bin[id]) * Data.item_sell_price(str(id)) * bonus)
 	bin.clear()
 	last_earned = total
 	gold += total

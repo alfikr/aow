@@ -40,8 +40,8 @@ func _draw() -> void:
 		player.water, Inventory.water_max(), Data.crop_name(crop), Inventory.count(Inventory.seed_id(crop)), int(player.stamina)]
 	var carry := "Dibawa: "
 	for id in Inventory.items:
-		if str(id).begins_with("crop:"):
-			carry += "%s x%d  " % [Data.crop_name(str(id).trim_prefix("crop:")), Inventory.items[id]]
+		if not str(id).begins_with("seed:"):
+			carry += "%s x%d  " % [Data.item_name(str(id)), Inventory.items[id]]
 	draw_string(font, Vector2(10, y + 20), line1, HORIZONTAL_ALIGNMENT_LEFT, -1, 15, Color.WHITE)
 	draw_string(font, Vector2(10, y + 40), line2, HORIZONTAL_ALIGNMENT_LEFT, -1, 15, Color(1, 0.9, 0.6))
 	draw_string(font, Vector2(10, y + 58),
