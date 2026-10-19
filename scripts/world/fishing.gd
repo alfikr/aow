@@ -26,6 +26,7 @@ func cast(at_place: String, at_cell: Vector2i) -> void:
 	target = at_cell
 	state = State.WAIT
 	timer = randf_range(1.2, 3.2)
+	Events.sfx.emit("splash")
 	Events.message.emit("Kamu melempar kail...")
 
 
@@ -81,6 +82,7 @@ func _catch() -> void:
 		return
 	Inventory.add("fish:" + id)
 	Progress.bump("fish")
+	Events.sfx.emit("harvest")
 	Events.message.emit("Dapat %s! (dijual %dG)" % [Data.fish[id].name, int(Data.fish[id].sell)])
 
 

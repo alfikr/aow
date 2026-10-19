@@ -126,6 +126,8 @@ func _on_day_ended(_passed_out: bool) -> void:
 	bin.clear()
 	last_earned = total
 	gold += total
+	if total > 0:
+		Events.sfx.emit("coin")
 
 
 func save_data() -> Dictionary:

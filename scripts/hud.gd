@@ -51,7 +51,7 @@ func _draw() -> void:
 	draw_string(font, Vector2(10, y + 20), line1, HORIZONTAL_ALIGNMENT_LEFT, -1, 15, Color.WHITE)
 	draw_string(font, Vector2(10, y + 40), line2, HORIZONTAL_ALIGNMENT_LEFT, -1, 15, Color(1, 0.9, 0.6))
 	draw_string(font, Vector2(10, y + 58),
-		"%s   Alat aktif: %s   [I inventori, F6/F9/F10]" % [carry, Player.TOOL_NAMES[player.tool]],
+		"%s   Alat aktif: %s   [I inventori, Esc menu]" % [carry, Player.TOOL_NAMES[player.tool]],
 		HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color(0.8, 0.9, 1))
 	if text_t > 0.0:
 		draw_rect(Rect2(0, 0, Layout.COLS * Layout.TILE, 30 + 18 * (text.length() / 100)), Color(0, 0, 0, 0.45))

@@ -70,6 +70,7 @@ func interact(i: int) -> void:
 		var prod: String = Data.animals[a.type].product
 		Inventory.add("prod:" + prod)
 		a.product = false
+		Events.sfx.emit("harvest")
 		Events.message.emit("Mengambil %s dari %s." % [Data.products[prod].name, a.name])
 	elif not a.fed:
 		if Inventory.remove("feed"):

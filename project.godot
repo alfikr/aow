@@ -3,18 +3,20 @@ config_version=5
 
 [application]
 
-config/name="Harvest Moon: Back to Nature (fan remake)"
-run/main_scene="res://scenes/main.tscn"
+config/name="Lembah Panen"
+run/main_scene="res://scenes/title.tscn"
 config/features=PackedStringArray("4.3")
 
 [autoload]
 
 Events="*res://scripts/autoload/events.gd"
+Settings="*res://scripts/autoload/settings.gd"
 Data="*res://scripts/autoload/data.gd"
 Clock="*res://scripts/autoload/clock.gd"
 Inventory="*res://scripts/autoload/inventory.gd"
 Progress="*res://scripts/autoload/progress.gd"
 SaveSystem="*res://scripts/autoload/save_system.gd"
+Audio="*res://scripts/autoload/audio.gd"
 
 [display]
 

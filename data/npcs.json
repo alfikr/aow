@@ -84,7 +84,7 @@
 			"schedule": [
 				{"from": 360, "to": 1440, "area": "house", "cell": [12, 6], "rain": true},
 				{"from": 360, "to": 600, "area": "village", "cell": [3, 9]},
-				{"from": 600, "to": 1020, "area": "village", "cell": [26, 9]},
+				{"from": 600, "to": 1020, "area": "village", "cell": [28, 10]},
 				{"from": 1020, "to": 1260, "area": "inn", "cell": [16, 8]},
 				{"from": 1260, "to": 1440, "area": "house", "cell": [12, 6]}
 			],

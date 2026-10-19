@@ -488,6 +488,68 @@ func _ready() -> void:
 	check(menu.body.contains("Skor") and menu.body.contains("Mira"), "ending merangkum progres")
 	menu.close()
 
+
+	# --- tahap 7: audio, pengaturan, menu jeda, judul
+	for sfx_name in Audio.SFX_NAMES:
+		check(Audio.sfx.has(sfx_name), "efek suara %s termuat" % sfx_name)
+	Audio.play("coin")
+	Audio.set_track("music_day")
+	check(Audio.music.stream != null and (Audio.music.stream as AudioStreamWAV).loop_mode == AudioStreamWAV.LOOP_FORWARD, "musik hari termuat dan berulang")
+	world.set_area("shop")
+	check(Audio.choose_track() == "music_indoor", "musik interior di dalam ruangan")
+	world.set_area("farm")
+	Clock.minutes = 19.0 * 60
+	check(Audio.choose_track() == "music_night", "musik malam setelah 18:00")
+	Clock.minutes = 10.0 * 60
+	check(Audio.choose_track() == "music_day", "musik hari di luar ruangan")
+
+	var vol0: int = Settings.volumes.master
+	Settings.adjust("master", 100)
+	check(Settings.volumes.master == 10, "volume dibatasi maksimal 10")
+	Settings.adjust("master", -100)
+	check(Settings.volumes.master == 0 and AudioServer.get_bus_volume_db(0) <= -79.0, "volume 0 membisukan bus")
+	Settings.adjust("master", vol0)
+	check(AudioServer.get_bus_index("Music") > 0 and AudioServer.get_bus_index("SFX") > 0, "bus Music dan SFX tersedia")
+
+	var esc := InputEventKey.new()
+	esc.keycode = KEY_ESCAPE
+	esc.pressed = true
+	menu._unhandled_input(esc)
+	check(menu.mode == menu.Mode.PAUSE and Events.menu_open, "Esc membuka menu jeda")
+	var pause_kinds: Array = menu.entries.map(func(e): return e.kind)
+	check(pause_kinds == ["resume", "save", "settings", "help", "title", "quit"], "isi menu jeda")
+	menu._activate(menu.entries[2])
+	check(menu.mode == menu.Mode.SETTINGS and menu.return_to == menu.Mode.PAUSE, "pengaturan dibuka dari jeda")
+	menu.cursor = 1
+	var music0: int = Settings.volumes.music
+	var right := InputEventKey.new()
+	right.keycode = KEY_D
+	right.pressed = true
+	menu._unhandled_input(right)
+	check(Settings.volumes.music == mini(10, music0 + 1), "A/D mengubah volume musik")
+	Settings.adjust("music", music0 - Settings.volumes.music)
+	menu.back()
+	check(menu.mode == menu.Mode.PAUSE, "Esc dari pengaturan kembali ke jeda")
+	menu._activate(menu.entries[3])
+	check(menu.mode == menu.Mode.HELP and menu.body.contains("WASD"), "bantuan menampilkan kontrol")
+	menu.back()
+	menu._activate(menu.entries[1])
+	check(menu.note.contains("disimpan"), "simpan dari menu jeda")
+	menu._activate(menu.entries[0])
+	check(menu.mode == menu.Mode.NONE and not Events.menu_open and not Clock.paused, "lanjut menutup jeda")
+
+	var title: Control = load("res://scenes/title.tscn").instantiate()
+	add_child(title)
+	await get_tree().process_frame
+	var title_kinds: Array = title.entries.map(func(e): return e.kind)
+	check(title_kinds.has("new") and title_kinds.has("settings") and title_kinds.has("quit"), "menu judul memuat pilihan utama")
+	check(title_kinds.has("continue") == SaveSystem.has_save(), "Lanjutkan hanya bila ada simpanan")
+	title._activate("settings")
+	check(title.menu.mode == title.menu.Mode.SETTINGS and not title.menu.allow_pause, "pengaturan dari menu judul")
+	title.menu.close()
+	title.queue_free()
+	await get_tree().process_frame
+
 	SaveSystem.delete_save()
 	print("HASIL: ", "LULUS" if failures == 0 else "GAGAL (%d)" % failures)
 	get_tree().quit(failures)

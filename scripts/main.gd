@@ -1,12 +1,12 @@
 extends Node2D
-## Scene utama: memuat simpanan bila ada, dan menangani tombol simpan/muat.
+## Scene utama: memuat simpanan bila ada, dan tombol cepat simpan/muat.
 
 
 func _ready() -> void:
 	if SaveSystem.load_game():
 		Events.message.emit("Game dimuat. %s" % Clock.date_text())
 	else:
-		Events.message.emit("Selamat datang! WASD jalan, Spasi pakai alat, E interaksi.")
+		Events.message.emit("Selamat datang! WASD jalan, Spasi pakai alat, E interaksi, Esc menu.")
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -18,8 +18,3 @@ func _unhandled_input(event: InputEvent) -> void:
 		KEY_F9:
 			if not SaveSystem.load_game():
 				Events.message.emit("Tidak ada simpanan.")
-		KEY_F10:
-			SaveSystem.delete_save()
-			Inventory.reset()
-			Clock.load_data({})
-			get_tree().reload_current_scene()

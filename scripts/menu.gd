@@ -1,12 +1,17 @@
 extends Control
 ## Menu modal: toko, inventori, dialog NPC, dan layar ending.
 
-enum Mode { NONE, SHOP, INVENTORY, DIALOG, COOK, ENDING }
+signal closed
+
+enum Mode { NONE, SHOP, INVENTORY, DIALOG, COOK, ENDING, PAUSE, SETTINGS, HELP }
 
 const PANEL := Rect2(120, 40, 720, 440)
-const BODY_H := 130.0
+const BODY_H := 96.0
+const HELP_TEXT := "WASD / panah: jalan\nSpasi: pakai alat di tile depan (atau tarik pancing)\n1 cangkul   2 penyiram   3 benih   4 pancing   Q ganti jenis benih\nE: bicara, panen, ambil produk, buka pintu benda, tidur di kasur, masak di dapur\nI: inventori (Enter pada masakan untuk makan)   Esc: menu jeda   F11: layar penuh\n\nSiram tanaman tiap hari, panen, lalu masukkan ke kotak kirim (E). Uang diterima saat tidur.\nToko ada di desa (timur peternakan), buka 09:00-18:00. Tambang di utara desa, pantai di timur."
 
 var mode := Mode.NONE
+var return_to := Mode.NONE   # mode tujuan saat Esc dari Pengaturan/Bantuan
+var allow_pause := true
 var entries: Array = []   # {label, kind, arg}
 var cursor := 0
 var note := ""
@@ -32,6 +37,8 @@ func open(m: Mode) -> void:
 	page = 0
 	if m == Mode.ENDING:
 		body = Progress.ending_text()
+	elif m == Mode.HELP:
+		body = HELP_TEXT
 	_rebuild()
 	Events.menu_open = true
 	Clock.paused = true
@@ -47,9 +54,21 @@ func open_dialog(id: String) -> void:
 
 func close() -> void:
 	mode = Mode.NONE
+	return_to = Mode.NONE
 	Events.menu_open = false
 	Clock.paused = false
 	queue_redraw()
+	closed.emit()
+
+
+## Esc / selesai: kembali ke menu pemanggil, atau tutup.
+func back() -> void:
+	if return_to != Mode.NONE:
+		var m := return_to
+		return_to = Mode.NONE
+		open(m)
+	else:
+		close()
 
 
 func _season_text(id: String) -> String:
@@ -75,6 +94,16 @@ func _rebuild() -> void:
 		_build_inventory()
 	elif mode == Mode.COOK:
 		_build_cook()
+	elif mode == Mode.PAUSE:
+		entries = [
+			{"label": "Lanjut bermain", "kind": "resume"},
+			{"label": "Simpan game", "kind": "save"},
+			{"label": "Pengaturan", "kind": "settings"},
+			{"label": "Bantuan & kontrol", "kind": "help"},
+			{"label": "Ke menu utama", "kind": "title"},
+			{"label": "Keluar dari game", "kind": "quit"}]
+	elif mode == Mode.SETTINGS:
+		_build_settings()
 	elif mode == Mode.DIALOG:
 		if page < pages.size() - 1:
 			pass   # sedang membaca halaman: Enter untuk lanjut
@@ -154,6 +183,19 @@ func _build_inventory() -> void:
 		entries.append({"label": "Hari ini: %s (harga jual +%d%%)" % [fest.name, roundi(float(fest.sell_bonus) * 100)]})
 
 
+func _bar(v: int) -> String:
+	return "[" + "#".repeat(v) + "-".repeat(10 - v) + "] %d/10" % v
+
+
+func _build_settings() -> void:
+	entries = [
+		{"label": "Volume utama   " + _bar(Settings.volumes.master), "kind": "vol", "arg": "master"},
+		{"label": "Musik               " + _bar(Settings.volumes.music), "kind": "vol", "arg": "music"},
+		{"label": "Efek suara       " + _bar(Settings.volumes.sfx), "kind": "vol", "arg": "sfx"},
+		{"label": "Layar penuh (F11): " + ("Nyala" if Settings.fullscreen else "Mati"), "kind": "fullscreen"},
+		{"label": "Kembali", "kind": "back"}]
+
+
 func _ingredients_text(r: Dictionary) -> String:
 	var parts := []
 	for iid in r.ingredients:
@@ -174,21 +216,36 @@ func _unhandled_input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 		return
 	if mode == Mode.NONE:
-		if event.keycode == KEY_I:
+		if allow_pause and event.keycode == KEY_I:
 			open(Mode.INVENTORY)
+			get_viewport().set_input_as_handled()
+		elif allow_pause and event.keycode == KEY_ESCAPE:
+			open(Mode.PAUSE)
 			get_viewport().set_input_as_handled()
 		return
 	get_viewport().set_input_as_handled()
 	match event.keycode:
 		KEY_ESCAPE:
-			close()
+			back()
+		KEY_LEFT, KEY_A:
+			if mode == Mode.SETTINGS and entries[cursor].get("kind", "") == "vol":
+				Settings.adjust(entries[cursor].arg, -1)
+				Events.sfx.emit("select")
+				_rebuild()
+		KEY_RIGHT, KEY_D:
+			if mode == Mode.SETTINGS and entries[cursor].get("kind", "") == "vol":
+				Settings.adjust(entries[cursor].arg, 1)
+				Events.sfx.emit("select")
+				_rebuild()
 		KEY_I:
 			if mode == Mode.INVENTORY:
 				close()
 		KEY_UP, KEY_W:
 			cursor = maxi(cursor - 1, 0)
+			Events.sfx.emit("select")
 		KEY_DOWN, KEY_S:
 			cursor = mini(cursor + 1, maxi(entries.size() - 1, 0))
+			Events.sfx.emit("select")
 		KEY_ENTER, KEY_KP_ENTER, KEY_SPACE:
 			_confirm()
 	queue_redraw()
@@ -197,11 +254,13 @@ func _unhandled_input(event: InputEvent) -> void:
 func _confirm() -> void:
 	if mode == Mode.ENDING:
 		close()
+	elif mode == Mode.HELP:
+		back()
 	elif mode == Mode.DIALOG and page < pages.size() - 1:
 		page += 1
 		body = pages[page]
 		_rebuild()
-	elif entries.size() > 0 and mode in [Mode.SHOP, Mode.DIALOG, Mode.COOK, Mode.INVENTORY]:
+	elif entries.size() > 0 and mode in [Mode.SHOP, Mode.DIALOG, Mode.COOK, Mode.INVENTORY, Mode.PAUSE, Mode.SETTINGS]:
 		_activate(entries[cursor])
 
 
@@ -211,6 +270,7 @@ func _activate(e: Dictionary) -> void:
 			var price := Data.seed_price(e.arg)
 			if Inventory.spend(price):
 				Inventory.add(Inventory.seed_id(e.arg))
+				Events.sfx.emit("coin")
 				note = "Beli benih %s (-%dG)." % [Data.crop_name(e.arg), price]
 			else:
 				note = "Uang tidak cukup."
@@ -249,6 +309,7 @@ func _activate(e: Dictionary) -> void:
 				for iid in r.ingredients:
 					Inventory.remove(iid, int(r.ingredients[iid]))
 				Inventory.add("dish:" + e.arg)
+				Events.sfx.emit("cook")
 				Progress.bump("dishes")
 				note = "Kamu memasak %s! Makan lewat Inventori (I)." % r.name
 		"eat":
@@ -276,6 +337,34 @@ func _activate(e: Dictionary) -> void:
 		"close":
 			close()
 			return
+		"resume":
+			close()
+			return
+		"save":
+			note = "Game disimpan." if SaveSystem.save_game() else "Gagal menyimpan."
+		"settings":
+			open(Mode.SETTINGS)
+			return_to = Mode.PAUSE
+			return
+		"help":
+			open(Mode.HELP)
+			return_to = Mode.PAUSE
+			return
+		"title":
+			SaveSystem.save_game()
+			close()
+			get_tree().change_scene_to_file("res://scenes/title.tscn")
+			return
+		"quit":
+			get_tree().quit()
+			return
+		"vol":
+			pass
+		"fullscreen":
+			Settings.toggle_fullscreen()
+		"back":
+			back()
+			return
 	_rebuild()
 
 
@@ -291,6 +380,9 @@ func _draw() -> void:
 		Mode.INVENTORY: title = "Inventori"
 		Mode.ENDING: title = "Dua Tahun Berlalu"
 		Mode.COOK: title = "Dapur"
+		Mode.PAUSE: title = "Jeda"
+		Mode.SETTINGS: title = "Pengaturan"
+		Mode.HELP: title = "Bantuan"
 		Mode.DIALOG:
 			var npcs := get_tree().get_first_node_in_group("npcs") as Npcs
 			title = "%s   (hati %d/10)" % [npcs.npc_name(npc_id), npcs.hearts(npc_id)]
@@ -307,7 +399,7 @@ func _draw() -> void:
 		if mode == Mode.DIALOG and page < pages.size() - 1:
 			draw_string(font, Vector2(PANEL.position.x + 24, y), "(Enter untuk lanjut)", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color(0.7, 0.8, 1))
 	if mode != Mode.ENDING:
-		var selectable := mode in [Mode.SHOP, Mode.DIALOG, Mode.COOK, Mode.INVENTORY]
+		var selectable := mode in [Mode.SHOP, Mode.DIALOG, Mode.COOK, Mode.INVENTORY, Mode.PAUSE, Mode.SETTINGS]
 		for i in entries.size():
 			var selected := selectable and i == cursor
 			if selected:
@@ -320,6 +412,9 @@ func _draw() -> void:
 	match mode:
 		Mode.INVENTORY: hint = "W/S pilih, Enter makan masakan, Esc / I tutup"
 		Mode.COOK: hint = "W/S pilih, Enter masak, Esc tutup"
+		Mode.PAUSE: hint = "W/S pilih, Enter pilih, Esc lanjut"
+		Mode.SETTINGS: hint = "W/S pilih, A/D atur volume, Enter ubah, Esc kembali"
+		Mode.HELP: hint = "Enter / Esc kembali"
 		Mode.DIALOG: hint = "W/S pilih, Enter pilih, Esc tutup"
 		Mode.ENDING: hint = "Enter untuk terus bermain"
 	draw_string(font, PANEL.position + Vector2(20, PANEL.size.y - 40), note, HORIZONTAL_ALIGNMENT_LEFT, -1, 15, Color(0.7, 1, 0.7))

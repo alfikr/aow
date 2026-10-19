@@ -49,7 +49,8 @@ func say(text: String) -> void:
 
 func spend_stamina(cost: float) -> bool:
 	if stamina < cost:
-		say("Kamu terlalu lelah. Tidurlah di rumah (E di pintu).")
+		Events.sfx.emit("error")
+		say("Kamu terlalu lelah. Tidurlah di kasur di rumah.")
 		return false
 	stamina -= cost
 	return true
@@ -83,6 +84,7 @@ func travel(area_id: String, spawn) -> void:
 	cell = Vector2i(int(spawn[0]), int(spawn[1]))
 	position = Vector2(cell * Layout.TILE)
 	fishing.cancel()
+	Events.sfx.emit("door")
 	say("Tiba di %s." % world.area_name())
 
 
@@ -128,6 +130,7 @@ func use_tool() -> void:
 	var feat := world.feature_at(c)
 	if feat.get("kind", "") == "rock" and tool != Tool.FISH:
 		if spend_stamina(Mine.STAMINA_COST * Inventory.stamina_mult("hoe")):
+			Events.sfx.emit("mine")
 			say(mine.break_rock(feat))
 			world.remove_feature(feat)
 		return
@@ -149,6 +152,7 @@ func use_tool() -> void:
 					farm.untill(c)
 			elif world.in_field(c) and spend_stamina(4 * Inventory.stamina_mult("hoe")):
 				farm.till(c)
+				Events.sfx.emit("hoe")
 		Tool.WATER:
 			if world.area_id != "farm" or not farm.has_tile(c) or farm.is_watered(c):
 				return
@@ -157,6 +161,7 @@ func use_tool() -> void:
 			elif spend_stamina(2 * Inventory.stamina_mult("water")):
 				farm.water(c)
 				water -= 1
+				Events.sfx.emit("water")
 		Tool.SEED:
 			if world.area_id != "farm" or not farm.has_tile(c) or farm.crop_at(c) != "":
 				return
@@ -168,6 +173,7 @@ func use_tool() -> void:
 			elif spend_stamina(1):
 				Inventory.remove(Inventory.seed_id(id))
 				farm.plant(c, id)
+				Events.sfx.emit("plant")
 
 
 func interact() -> void:
@@ -178,6 +184,7 @@ func interact() -> void:
 		return
 	var who := npcs.npc_at(world.area_id, c)
 	if who != "":
+		Events.sfx.emit("blip")
 		Events.open_dialog.emit(who)
 		return
 	if dog.cell == c:
@@ -215,6 +222,7 @@ func harvest(c: Vector2i) -> void:
 		say("%s belum matang (%d/%d hari)." % [Data.crop_name(id), farm.tiles[c].age, Data.growth_days(id)])
 		return
 	var id := farm.harvest(c)
+	Events.sfx.emit("harvest")
 	Inventory.add(Inventory.crop_id(id))
 	var regrow := Data.regrow_days(id)
 	if regrow > 0:
