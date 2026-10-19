@@ -23,6 +23,9 @@ Peternakan -> (pintu timur) -> Desa -> Toko (buka 09:00-18:00). Benih dan upgrad
 ## Hewan
 Beli pakan, ayam (300G), dan sapi (1500G) di toko desa. Kandang ada di sisi barat peternakan. Beri pakan tiap hari (E pada hewan), ambil telur/susu keesokan harinya, lalu kirim lewat kotak kirim. Anjing mengikutimu; elus dengan E.
 
+## Warga
+Bicara dengan E pada NPC (menu: Bicara / Beri hadiah). Tiap NPC punya jadwal, selera hadiah, dan ulang tahun. Sampai 8 hati, bawa Bulu Biru untuk melamar Mira atau Sari.
+
 ## Alur
 Cangkul -> tanam -> siram tiap hari -> panen setelah matang -> kirim -> tidur untuk menerima uang.
 

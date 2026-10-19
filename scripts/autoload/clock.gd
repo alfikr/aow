@@ -6,6 +6,7 @@ const DAY_END := 24 * 60
 const MINUTES_PER_SEC := 10.0
 const DAYS_PER_SEASON := 30
 const SEASON_NAMES := ["Semi", "Panas", "Gugur", "Dingin"]
+const WEEKDAY_NAMES := ["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"]
 const WEATHER_NAMES := ["Cerah", "Hujan", "Salju"]
 
 enum Weather { SUNNY, RAINY, SNOW }
@@ -52,12 +53,21 @@ func festival() -> Dictionary:
 	return Data.festivals.get("%d-%d" % [season, day], {})
 
 
+func weekday() -> int:
+	return (season * DAYS_PER_SEASON + day - 1) % 7
+
+
+## Hari ke-berapa sejak awal permainan (hari pertama = 1).
+func total_days() -> int:
+	return (year - 1) * DAYS_PER_SEASON * SEASON_NAMES.size() + season * DAYS_PER_SEASON + day
+
+
 func time_text() -> String:
 	return "%02d:%02d" % [int(minutes) / 60, int(minutes) % 60]
 
 
 func date_text() -> String:
-	return "%s, Hari %d (Tahun %d)" % [SEASON_NAMES[season], day, year]
+	return "%s, Hari %d %s (Tahun %d)" % [SEASON_NAMES[season], day, WEEKDAY_NAMES[weekday()], year]
 
 
 func save_data() -> Dictionary:

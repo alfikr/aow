@@ -13,6 +13,7 @@ Events="*res://scripts/autoload/events.gd"
 Data="*res://scripts/autoload/data.gd"
 Clock="*res://scripts/autoload/clock.gd"
 Inventory="*res://scripts/autoload/inventory.gd"
+Progress="*res://scripts/autoload/progress.gd"
 SaveSystem="*res://scripts/autoload/save_system.gd"
 
 [display]

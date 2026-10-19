@@ -44,7 +44,7 @@
 				"label": "Kandang Sapi"
 			},
 			{
-				"kind": "sleep",
+				"kind": "exit",
 				"rect": [
 					3,
 					3,
@@ -52,7 +52,12 @@
 					1
 				],
 				"color": "593319",
-				"label": "Pintu"
+				"label": "Pintu",
+				"to": "home",
+				"spawn": [
+					14,
+					11
+				]
 			},
 			{
 				"kind": "bin",
@@ -274,6 +279,54 @@
 					28,
 					9
 				]
+			},
+			{
+				"kind": "exit",
+				"rect": [
+					16,
+					7,
+					1,
+					1
+				],
+				"color": "5a3a1a",
+				"label": "Pintu",
+				"to": "hall",
+				"spawn": [
+					14,
+					11
+				]
+			},
+			{
+				"kind": "exit",
+				"rect": [
+					24,
+					7,
+					1,
+					1
+				],
+				"color": "5a3a1a",
+				"label": "Pintu",
+				"to": "house",
+				"spawn": [
+					14,
+					11
+				]
+			},
+			{
+				"kind": "exit",
+				"rect": [
+					6,
+					11,
+					1,
+					1
+				],
+				"color": "5a3a1a",
+				"label": "Pintu",
+				"to": "inn",
+				"spawn": [
+					14,
+					11
+				]
 			}
 		]
 	},
@@ -445,6 +498,283 @@
 				"spawn": [
 					3,
 					15
+				]
+			}
+		]
+	},
+	"home": {
+		"name": "Rumah",
+		"indoor": true,
+		"ground": "2b2118",
+		"walkable": [
+			8,
+			3,
+			14,
+			10
+		],
+		"features": [
+			{
+				"kind": "floor",
+				"rect": [
+					8,
+					3,
+					14,
+					10
+				],
+				"color": "d8c19a"
+			},
+			{
+				"kind": "sleep",
+				"rect": [
+					9,
+					4,
+					3,
+					2
+				],
+				"color": "5b7fb8",
+				"label": "Kasur (E)"
+			},
+			{
+				"kind": "building",
+				"rect": [
+					18,
+					4,
+					4,
+					2
+				],
+				"color": "8c5a30",
+				"label": "Dapur"
+			},
+			{
+				"kind": "building",
+				"rect": [
+					14,
+					4,
+					2,
+					1
+				],
+				"color": "333333",
+				"label": "TV"
+			},
+			{
+				"kind": "exit",
+				"rect": [
+					14,
+					12,
+					2,
+					1
+				],
+				"color": "5a3a1a",
+				"label": "Keluar",
+				"to": "farm",
+				"spawn": [
+					3,
+					4
+				]
+			}
+		]
+	},
+	"hall": {
+		"name": "Balai Desa",
+		"indoor": true,
+		"ground": "2b2118",
+		"walkable": [
+			8,
+			3,
+			14,
+			10
+		],
+		"features": [
+			{
+				"kind": "floor",
+				"rect": [
+					8,
+					3,
+					14,
+					10
+				],
+				"color": "c8c8d0"
+			},
+			{
+				"kind": "building",
+				"rect": [
+					12,
+					5,
+					6,
+					1
+				],
+				"color": "7a5230",
+				"label": "Podium"
+			},
+			{
+				"kind": "building",
+				"rect": [
+					9,
+					8,
+					3,
+					1
+				],
+				"color": "8c5a30",
+				"label": "Bangku"
+			},
+			{
+				"kind": "building",
+				"rect": [
+					18,
+					8,
+					3,
+					1
+				],
+				"color": "8c5a30",
+				"label": "Bangku"
+			},
+			{
+				"kind": "exit",
+				"rect": [
+					14,
+					12,
+					2,
+					1
+				],
+				"color": "5a3a1a",
+				"label": "Keluar",
+				"to": "village",
+				"spawn": [
+					16,
+					8
+				]
+			}
+		]
+	},
+	"inn": {
+		"name": "Penginapan",
+		"indoor": true,
+		"ground": "2b2118",
+		"walkable": [
+			8,
+			3,
+			14,
+			10
+		],
+		"features": [
+			{
+				"kind": "floor",
+				"rect": [
+					8,
+					3,
+					14,
+					10
+				],
+				"color": "d9bf8c"
+			},
+			{
+				"kind": "building",
+				"rect": [
+					11,
+					5,
+					8,
+					1
+				],
+				"color": "7a5230",
+				"label": "Resepsionis"
+			},
+			{
+				"kind": "building",
+				"rect": [
+					8,
+					9,
+					3,
+					1
+				],
+				"color": "8c5a30",
+				"label": "Meja"
+			},
+			{
+				"kind": "building",
+				"rect": [
+					19,
+					9,
+					3,
+					1
+				],
+				"color": "8c5a30",
+				"label": "Meja"
+			},
+			{
+				"kind": "exit",
+				"rect": [
+					14,
+					12,
+					2,
+					1
+				],
+				"color": "5a3a1a",
+				"label": "Keluar",
+				"to": "village",
+				"spawn": [
+					6,
+					10
+				]
+			}
+		]
+	},
+	"house": {
+		"name": "Rumah Warga",
+		"indoor": true,
+		"ground": "2b2118",
+		"walkable": [
+			8,
+			3,
+			14,
+			10
+		],
+		"features": [
+			{
+				"kind": "floor",
+				"rect": [
+					8,
+					3,
+					14,
+					10
+				],
+				"color": "cfb99a"
+			},
+			{
+				"kind": "building",
+				"rect": [
+					14,
+					6,
+					3,
+					2
+				],
+				"color": "8c5a30",
+				"label": "Meja"
+			},
+			{
+				"kind": "building",
+				"rect": [
+					8,
+					3,
+					3,
+					2
+				],
+				"color": "6e86a8",
+				"label": "Kasur"
+			},
+			{
+				"kind": "exit",
+				"rect": [
+					14,
+					12,
+					2,
+					1
+				],
+				"color": "5a3a1a",
+				"label": "Keluar",
+				"to": "village",
+				"spawn": [
+					24,
+					8
 				]
 			}
 		]

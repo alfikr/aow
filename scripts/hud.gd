@@ -3,10 +3,12 @@ extends Control
 
 var text := ""
 var text_t := 0.0
+var queue: Array = []   # cerita yang menunggu giliran tampil
 
 
 func _ready() -> void:
 	Events.message.connect(func(t: String): text = t; text_t = 4.0)
+	Events.story.connect(func(t: String): queue.append(t))
 	Events.day_started.connect(_on_day_started)
 
 
@@ -15,11 +17,15 @@ func _on_day_started(_passed_out: bool) -> void:
 	var fest := Clock.festival()
 	if not fest.is_empty():
 		msg = "%s hari ini! Harga jual +%d%%." % [fest.name, roundi(float(fest.sell_bonus) * 100)]
-	Events.message.emit(msg)
+	text = msg
+	text_t = 4.0
 
 
 func _process(delta: float) -> void:
 	text_t = maxf(0.0, text_t - delta)
+	if text_t <= 0.0 and not queue.is_empty():
+		text = queue.pop_front()
+		text_t = 5.0
 	queue_redraw()
 
 
@@ -48,4 +54,5 @@ func _draw() -> void:
 		"%s   Alat aktif: %s   [I inventori, F6/F9/F10]" % [carry, Player.TOOL_NAMES[player.tool]],
 		HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color(0.8, 0.9, 1))
 	if text_t > 0.0:
-		draw_string(font, Vector2(10, 22), text, HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color.WHITE)
+		draw_rect(Rect2(0, 0, Layout.COLS * Layout.TILE, 30 + 18 * (text.length() / 100)), Color(0, 0, 0, 0.45))
+		draw_multiline_string(font, Vector2(10, 22), text, HORIZONTAL_ALIGNMENT_LEFT, 930, 16, -1, Color.WHITE)

@@ -91,11 +91,11 @@ func upgrade(key: String) -> bool:
 	return true
 
 
-## Pindahkan semua hasil panen dan produk ternak yang dibawa ke kotak pengiriman.
+## Pindahkan semua barang yang bisa dijual ke kotak pengiriman.
 func ship_goods() -> int:
 	var moved := 0
 	for id in items.keys():
-		if str(id).begins_with("crop:") or str(id).begins_with("prod:"):
+		if Data.item_sell_price(str(id)) > 0:
 			bin[id] = int(bin.get(id, 0)) + items[id]
 			moved += items[id]
 			items.erase(id)

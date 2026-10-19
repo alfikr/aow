@@ -241,6 +241,112 @@ func _ready() -> void:
 	player.interact()
 	check(dog.affection == af + 3, "mengelus anjing")
 
+
+	# --- tahap 5: NPC
+	var npcs: Npcs = main.get_node("Npcs")
+	check(npcs.schedule_target("mira", 10 * 60, 2, false) == {"area": "shop", "cell": Vector2i(14, 4)}, "Mira di toko jam 10:00")
+	check(npcs.schedule_target("mira", 7 * 60, 2, false).area == "village", "Mira di desa jam 07:00")
+	check(npcs.schedule_target("mira", 7 * 60, 2, true).area == "shop", "Mira di toko saat hujan")
+	check(npcs.schedule_target("sari", 12 * 60, 6, false).area == "village", "Sari keluar penginapan hari Minggu")
+	check(npcs.schedule_target("sari", 12 * 60, 1, false).area == "inn", "Sari di penginapan hari kerja")
+	check(npcs.schedule_target("dodi", 12 * 60, 2, false).area == "hall", "Pak Dodi di balai hari kerja")
+	check(npcs.schedule_target("dodi", 12 * 60, 6, false).area == "village", "Pak Dodi di desa akhir pekan")
+
+	Clock.minutes = 10.0 * 60
+	npcs.snap_all()
+	Clock.weather = Clock.Weather.SUNNY
+	var wd := Clock.weekday()
+	var expected = npcs.schedule_target("mira", Clock.minutes, wd, false)
+	check(npcs.npc_at(expected.area, expected.cell) == "mira", "Mira berada di lokasi jadwalnya")
+
+	npcs.state["mira"].friend = 0
+	npcs.state["mira"].talked = false
+	npcs.state["mira"].gifted = false
+	var pages := npcs.talk("mira")
+	check(pages.size() == 1 and npcs.state["mira"].friend == 10, "bicara pertama +10 kasih sayang")
+	npcs.talk("mira")
+	check(npcs.state["mira"].friend == 10, "bicara lagi di hari sama tidak menambah")
+
+	Clock.season = 1
+	Clock.day = 1
+	Inventory.add("crop:tomat")
+	var msg := npcs.gift("mira", "crop:tomat")
+	check(npcs.state["mira"].friend == 90 and Inventory.count("crop:tomat") == 0, "hadiah favorit +80")
+	Inventory.add("crop:lobak")
+	check(npcs.gift("mira", "crop:lobak").contains("sudah menerima"), "satu hadiah per hari")
+
+	npcs.state["raka"].friend = 0
+	Inventory.add("crop:jagung")
+	npcs.gift("raka", "crop:jagung")
+	check(npcs.state["raka"].friend == 80, "Raka suka jagung")
+	npcs.state["lila"].friend = 100
+	Inventory.add("stone")
+	npcs.gift("lila", "stone")
+	check(npcs.state["lila"].friend == 60, "hadiah yang dibenci -40")
+
+	npcs.state["mira"].friend = 200
+	var ev_pages := npcs.talk("mira")
+	check(ev_pages.size() == 2 and npcs.state["mira"].seen.has("mira_2"), "event 2 hati terpicu")
+	npcs.state["mira"].talked = false
+	check(npcs.talk("mira").size() == 1, "event hanya sekali")
+
+	npcs.state["mira"].friend = 400
+	npcs.talk("mira")
+	check(Progress.knows_recipe("salad_tomat"), "event 4 hati memberi resep")
+	npcs.state["dodi"].friend = 200
+	g = Inventory.gold
+	npcs.talk("dodi")
+	check(Inventory.gold == g + 200, "event Pak Dodi memberi 200G")
+
+	# lamaran
+	Inventory.add("gift:bulu_biru")
+	npcs.state["mira"].friend = 700
+	check(npcs.gift("mira", "gift:bulu_biru").contains("belum"), "lamaran ditolak sebelum 8 hati")
+	check(Inventory.count("gift:bulu_biru") == 1, "Bulu Biru tidak terpakai saat ditolak")
+	check(npcs.gift("raka", "gift:bulu_biru").contains("istimewa"), "NPC non-romantis menolak")
+	npcs.state["mira"].friend = 800
+	npcs.gift("mira", "gift:bulu_biru")
+	check(Progress.fiance == "mira", "lamaran diterima")
+	Clock.end_day(false)
+	check(Progress.spouse == "mira" and Progress.fiance == "", "menikah keesokan hari")
+	check(npcs.schedule_target("mira", 12 * 60, 1, false).area == "farm", "pasangan membantu di peternakan siang hari")
+	check(npcs.schedule_target("mira", 7 * 60, 1, false).area == "home", "pasangan di rumah pagi hari")
+
+	for i in 30:
+		Clock.end_day(false)
+	check(Progress.child, "anak lahir 30 hari setelah menikah")
+
+	SaveSystem.save_game()
+	npcs.state["mira"].friend = 0
+	Progress.spouse = ""
+	SaveSystem.load_game()
+	check(npcs.state["mira"].friend >= 800 and Progress.spouse == "mira", "hubungan & pernikahan tersimpan")
+
+
+	# jalur NPC
+	world.set_area("village")
+	player.cell = Vector2i(20, 9)
+	npcs.where["mira"] = {"area": "village", "cell": Vector2i(3, 9)}
+	npcs.goal["mira"] = {"area": "village", "cell": Vector2i(6, 9)}
+	for i in 3:
+		npcs._advance("mira")
+	check(npcs.where["mira"].cell == Vector2i(6, 9), "NPC berjalan 3 langkah ke tujuan")
+	npcs.where["mira"] = {"area": "village", "cell": Vector2i(3, 9)}
+	npcs.goal["mira"] = {"area": "village", "cell": Vector2i(7, 9)}
+	npcs._advance("mira")
+	check(npcs.where["mira"].cell == Vector2i(4, 9), "NPC melangkah satu tile per giliran")
+	npcs.snap_all()
+
+	# dialog lewat menu
+	Inventory.add("crop:lobak")
+	menu.open_dialog("raka")
+	check(Events.menu_open and menu.mode == menu.Mode.DIALOG, "dialog NPC terbuka")
+	var kinds: Array = menu.entries.map(func(e): return e.kind)
+	check(kinds.has("talk") and kinds.has("gift") and kinds.has("close"), "menu dialog punya Bicara/Hadiah/Selesai")
+	menu._activate(menu.entries[0])
+	check(menu.body.begins_with("Raka"), "dialog menampilkan ucapan NPC")
+	menu.close()
+
 	SaveSystem.delete_save()
 	print("HASIL: ", "LULUS" if failures == 0 else "GAGAL (%d)" % failures)
 	get_tree().quit(failures)

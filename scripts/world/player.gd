@@ -13,6 +13,7 @@ const SPAWN := Vector2i(3, 4)   # tepat di depan pintu rumah
 @onready var world: World = $"../World"
 @onready var livestock: Livestock = $"../Livestock"
 @onready var dog: Dog = $"../Dog"
+@onready var npcs: Npcs = $"../Npcs"
 
 var save_key := "player"
 var cell := Vector2i(12, 14)
@@ -53,7 +54,8 @@ func spend_stamina(cost: float) -> bool:
 
 
 func walkable(c: Vector2i) -> bool:
-	if not world.walkable(c) or livestock.animal_at(world.area_id, c) >= 0:
+	if not world.walkable(c) or livestock.animal_at(world.area_id, c) >= 0 \
+			or npcs.npc_at(world.area_id, c) != "":
 		return false
 	return not (world.area_id == "farm" and farm.blocks(c))
 
@@ -151,6 +153,10 @@ func interact() -> void:
 	var ai := livestock.animal_at(world.area_id, c)
 	if ai >= 0:
 		livestock.interact(ai)
+		return
+	var who := npcs.npc_at(world.area_id, c)
+	if who != "":
+		Events.open_dialog.emit(who)
 		return
 	if dog.cell == c:
 		dog.pet()

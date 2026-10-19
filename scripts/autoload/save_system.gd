@@ -15,7 +15,8 @@ func has_save() -> bool:
 
 
 func save_game() -> bool:
-	var data := {"version": 1, "clock": Clock.save_data(), "inventory": Inventory.save_data()}
+	var data := {"version": 1, "clock": Clock.save_data(), "inventory": Inventory.save_data(),
+		"progress": Progress.save_data()}
 	for n in get_tree().get_nodes_in_group("saveable"):
 		data[n.save_key] = n.save_data()
 	var f := FileAccess.open(path, FileAccess.WRITE)
@@ -33,6 +34,7 @@ func load_game() -> bool:
 		return false
 	Clock.load_data(parsed.get("clock", {}))
 	Inventory.load_data(parsed.get("inventory", {}))
+	Progress.load_data(parsed.get("progress", {}))
 	for n in get_tree().get_nodes_in_group("saveable"):
 		if parsed.has(n.save_key):
 			n.load_data(parsed[n.save_key])

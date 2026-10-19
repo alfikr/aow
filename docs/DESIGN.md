@@ -19,7 +19,7 @@
 2. [x] Pertanian penuh: menu toko & inventori, upgrade alat (Dasar/Tembaga/Perak), tanaman berulang (tomat, jagung), festival musiman (bonus harga jual).
 3. [x] Dunia: area berbasis data (`data/areas.json`: peternakan, desa, interior toko), pintu perpindahan, jam buka toko.
 4. [x] Hewan: ayam & sapi (kandang interior, pakan, telur/susu, kasih sayang), anjing pengikut. Kuda ditunda.
-5. [ ] NPC: jadwal, dialog, hadiah, hubungan, event.
+5. [x] NPC: 5 warga (jadwal harian/cuaca/akhir pekan, jalan BFS, dialog musiman, hadiah dengan selera & ulang tahun, hati 0-10, event hati dengan hadiah, lamaran).
 6. [ ] Lanjutan: tambang, memancing, memasak, pernikahan, ending.
 7. [ ] Polesan: suara, menu, export Linux.
 
