@@ -7,9 +7,10 @@ enum Tool { HOE, WATER, SEED }
 const TOOL_NAMES := ["Cangkul", "Penyiram", "Benih"]
 const MOVE_TIME := 0.14
 const STAMINA_MAX := 100.0
-const SPAWN := Layout.HOUSE_DOOR + Vector2i(0, 1)
+const SPAWN := Vector2i(3, 4)   # tepat di depan pintu rumah
 
 @onready var farm: Farm = $"../Farm"
+@onready var world: World = $"../World"
 
 var save_key := "player"
 var cell := Vector2i(12, 14)
@@ -50,7 +51,30 @@ func spend_stamina(cost: float) -> bool:
 
 
 func walkable(c: Vector2i) -> bool:
-	return not Layout.is_solid(c) and not farm.blocks(c)
+	if not world.walkable(c):
+		return false
+	return not (world.area_id == "farm" and farm.blocks(c))
+
+
+## Coba melangkah satu tile; menangani pintu keluar dan pintu yang sedang tutup.
+func try_move(dir: Vector2i) -> void:
+	facing = dir
+	var target := cell + dir
+	var closed := world.closed_reason(target)
+	if closed != "":
+		say(closed)
+	elif walkable(target):
+		cell = target
+		var e := world.exit_at(cell)
+		if not e.is_empty():
+			travel(str(e.raw.to), e.raw.spawn)
+
+
+func travel(area_id: String, spawn) -> void:
+	world.set_area(area_id)
+	cell = Vector2i(int(spawn[0]), int(spawn[1]))
+	position = Vector2(cell * Layout.TILE)
+	say("Tiba di %s." % world.area_name())
 
 
 func _process(delta: float) -> void:
@@ -62,9 +86,7 @@ func _process(delta: float) -> void:
 		if dir.x != 0:
 			dir.y = 0
 		if dir != Vector2i.ZERO:
-			facing = dir
-			if walkable(cell + dir):
-				cell += dir
+			try_move(dir)
 			move_cd = MOVE_TIME
 	position = position.move_toward(Vector2(cell * Layout.TILE), Layout.TILE * delta / MOVE_TIME)
 	queue_redraw()
@@ -89,18 +111,20 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func use_tool() -> void:
 	var c := front()
-	if tool == Tool.WATER and Layout.POND.has_point(c):
+	if tool == Tool.WATER and world.feature_at(c).get("kind", "") == "water":
 		refill()
 		return
 	match tool:
 		Tool.HOE:
+			if world.area_id != "farm":
+				return
 			if farm.has_tile(c):
 				if farm.crop_at(c) == "" and spend_stamina(2 * Inventory.stamina_mult("hoe")):
 					farm.untill(c)
-			elif Layout.FIELD.has_point(c) and spend_stamina(4 * Inventory.stamina_mult("hoe")):
+			elif world.in_field(c) and spend_stamina(4 * Inventory.stamina_mult("hoe")):
 				farm.till(c)
 		Tool.WATER:
-			if not farm.has_tile(c) or farm.is_watered(c):
+			if world.area_id != "farm" or not farm.has_tile(c) or farm.is_watered(c):
 				return
 			if water <= 0:
 				say("Air habis. Isi ulang di kolam.")
@@ -108,13 +132,13 @@ func use_tool() -> void:
 				farm.water(c)
 				water -= 1
 		Tool.SEED:
-			if not farm.has_tile(c) or farm.crop_at(c) != "":
+			if world.area_id != "farm" or not farm.has_tile(c) or farm.crop_at(c) != "":
 				return
 			var id := crop_id()
 			if not Data.grows_in(id, Clock.season):
 				say("%s tidak bisa ditanam di musim %s." % [Data.crop_name(id), Clock.SEASON_NAMES[Clock.season]])
 			elif Inventory.count(Inventory.seed_id(id)) <= 0:
-				say("Benih %s habis. Beli di toko (E)." % Data.crop_name(id))
+				say("Benih %s habis. Beli di toko desa (E di konter)." % Data.crop_name(id))
 			elif spend_stamina(1):
 				Inventory.remove(Inventory.seed_id(id))
 				farm.plant(c, id)
@@ -122,19 +146,21 @@ func use_tool() -> void:
 
 func interact() -> void:
 	var c := front()
-	if c == Layout.HOUSE_DOOR:
-		Clock.end_day(false)
-	elif c == Layout.BIN:
-		if Inventory.ship_crops() > 0:
-			say("Hasil panen dimasukkan. Dibayar saat kamu tidur.")
-		else:
-			say("Kamu tidak membawa hasil panen.")
-	elif c == Layout.SHOP:
-		Events.open_shop.emit()
-	elif Layout.POND.has_point(c):
-		refill()
-	elif farm.crop_at(c) != "":
-		harvest(c)
+	match world.feature_at(c).get("kind", ""):
+		"sleep":
+			Clock.end_day(false)
+		"bin":
+			if Inventory.ship_crops() > 0:
+				say("Hasil panen dimasukkan. Dibayar saat kamu tidur.")
+			else:
+				say("Kamu tidak membawa hasil panen.")
+		"shop":
+			Events.open_shop.emit()
+		"water":
+			refill()
+		_:
+			if world.area_id == "farm" and farm.crop_at(c) != "":
+				harvest(c)
 
 
 func refill() -> void:
@@ -158,6 +184,7 @@ func harvest(c: Vector2i) -> void:
 
 func _on_day_started(passed_out: bool) -> void:
 	stamina = 60.0 if passed_out else STAMINA_MAX
+	world.set_area("farm")
 	cell = SPAWN
 	position = Vector2(cell * Layout.TILE)
 	facing = Vector2i(0, -1)
@@ -166,7 +193,7 @@ func _on_day_started(passed_out: bool) -> void:
 func _draw() -> void:
 	# garis tepi tile di depan (digambar relatif terhadap posisi pemain)
 	var f := front()
-	if Layout.in_map(f):
+	if f.x >= 0 and f.y >= 0 and f.x < Layout.COLS and f.y < Layout.ROWS:
 		draw_rect(Rect2(Vector2(f - cell) * Layout.TILE, Vector2.ONE * Layout.TILE),
 			Color(1, 1, 1, 0.9), false, 2.0)
 	draw_rect(Rect2(Vector2(6, 4), Vector2(20, 26)), Color(0.2, 0.35, 0.8))

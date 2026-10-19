@@ -17,6 +17,9 @@ Uji asap tanpa jendela:
 - I: inventori. Di toko (E): W/S pilih, Enter beli benih atau upgrade alat, Esc tutup
 - E: interaksi (panen, kotak kirim, toko benih, isi air di kolam, tidur di pintu rumah)
 
+## Dunia
+Peternakan -> (pintu timur) -> Desa -> Toko (buka 09:00-18:00). Benih dan upgrade alat dibeli di konter toko.
+
 ## Alur
 Cangkul -> tanam -> siram tiap hari -> panen setelah matang -> kirim -> tidur untuk menerima uang.
 

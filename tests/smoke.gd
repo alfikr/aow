@@ -118,6 +118,48 @@ func _ready() -> void:
 	menu.close()
 	check(not Events.menu_open, "menu ditutup")
 
+
+	# --- tahap 3: dunia & perpindahan area
+	var world: World = main.get_node("World")
+	Clock.minutes = 10.0 * 60
+	player.cell = Vector2i(28, 9)
+	player.try_move(Vector2i.RIGHT)
+	check(world.area_id == "village" and player.cell == Vector2i(1, 9), "keluar peternakan -> desa")
+	check(not farm.visible, "ladang disembunyikan di luar peternakan")
+
+	player.tool = Player.Tool.HOE
+	player.facing = Vector2i.RIGHT
+	player.use_tool()
+	check(not farm.has_tile(player.front()), "cangkul tidak berfungsi di desa")
+
+	player.cell = Vector2i(6, 8)
+	Clock.minutes = 7.0 * 60
+	player.try_move(Vector2i.UP)
+	check(world.area_id == "village" and player.cell == Vector2i(6, 8), "toko tutup jam 07:00")
+	check(world.closed_reason(Vector2i(6, 7)).contains("tutup"), "pesan toko tutup")
+	Clock.minutes = 10.0 * 60
+	player.try_move(Vector2i.UP)
+	check(world.area_id == "shop" and player.cell == Vector2i(14, 11), "toko buka jam 10:00 -> masuk interior")
+	check(not world.walkable(Vector2i(7, 7)), "dinding interior tidak bisa dilewati")
+
+	player.cell = Vector2i(14, 6)
+	player.facing = Vector2i.UP
+	player.interact()
+	check(Events.menu_open, "konter toko membuka menu")
+	menu.close()
+
+	player.cell = Vector2i(14, 11)
+	player.try_move(Vector2i.DOWN)
+	check(world.area_id == "village" and player.cell == Vector2i(6, 8), "keluar toko -> desa")
+
+	SaveSystem.save_game()
+	world.set_area("farm")
+	SaveSystem.load_game()
+	check(world.area_id == "village", "area tersimpan & dimuat")
+
+	Clock.end_day(false)
+	check(world.area_id == "farm" and player.cell == Player.SPAWN and farm.visible, "tidur -> bangun di rumah (peternakan)")
+
 	SaveSystem.delete_save()
 	print("HASIL: ", "LULUS" if failures == 0 else "GAGAL (%d)" % failures)
 	get_tree().quit(failures)

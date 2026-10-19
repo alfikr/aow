@@ -32,8 +32,10 @@ func _draw() -> void:
 	draw_rect(Rect2(0, y, Layout.COLS * Layout.TILE, Layout.HUD_H), Color(0.12, 0.1, 0.08))
 
 	var crop := player.crop_id()
-	var line1 := "%s  %s  %s   Uang: %dG" % [
-		Clock.date_text(), Clock.time_text(), Clock.WEATHER_NAMES[Clock.weather], Inventory.gold]
+	var world := get_tree().get_first_node_in_group("world") as World
+	var line1 := "%s  %s  %s  [%s]   Uang: %dG" % [
+		Clock.date_text(), Clock.time_text(), Clock.WEATHER_NAMES[Clock.weather],
+		world.area_name() if world else "", Inventory.gold]
 	var line2 := "Alat: [1]Cangkul [2]Penyiram(air %d/%d) [3]Benih:%s x%d (Q ganti)   Stamina: %d" % [
 		player.water, Inventory.water_max(), Data.crop_name(crop), Inventory.count(Inventory.seed_id(crop)), int(player.stamina)]
 	var carry := "Dibawa: "

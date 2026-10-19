@@ -2,15 +2,18 @@ extends Node
 ## Data statis game (dibaca dari res://data/*.json).
 
 const CROPS_PATH := "res://data/crops.json"
+const AREAS_PATH := "res://data/areas.json"
 const FESTIVALS_PATH := "res://data/festivals.json"
 
 var crops := {}
 var festivals := {}
+var areas := {}
 
 
 func _ready() -> void:
 	crops = _load_json(CROPS_PATH)
 	festivals = _load_json(FESTIVALS_PATH)
+	areas = _load_json(AREAS_PATH)
 
 
 func _load_json(path: String) -> Dictionary:

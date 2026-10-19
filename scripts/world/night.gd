@@ -7,6 +7,9 @@ func _process(_delta: float) -> void:
 
 
 func _draw() -> void:
+	var world := get_tree().get_first_node_in_group("world") as World
+	if world != null and world.is_indoor():
+		return
 	var size := Vector2(Layout.COLS, Layout.ROWS) * Layout.TILE
 	var dark := clampf((Clock.minutes - 18 * 60) / (6 * 60), 0.0, 0.55)
 	if Clock.weather != Clock.Weather.SUNNY:
