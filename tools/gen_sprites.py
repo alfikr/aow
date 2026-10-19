@@ -72,6 +72,10 @@ FONT = {
     "T": ["111", "010", "010", "010", "010"],
     "O": ["111", "101", "101", "101", "111"],
     "K": ["101", "101", "110", "101", "101"],
+    "B": ["110", "101", "110", "101", "110"],
+    "A": ["010", "101", "111", "101", "101"],
+    "L": ["100", "100", "100", "100", "111"],
+    "I": ["111", "010", "010", "010", "111"],
 }
 
 
@@ -297,7 +301,7 @@ def make_floors():
     cv.save("floor_tile")
 
 
-def make_bed():
+def make_bed(name="bed", quilt="4d78c0", quilt_l="6a93d8", quilt_d="3a5f9c"):
     cv = Canvas(48, 32)
     cv.rect(2, 0, 44, 32, WOOD)
     cv.rect(2, 0, 44, 10, WOOD_L)
@@ -311,15 +315,15 @@ def make_bed():
         cv.hline(px, 15, 14, OFFWHITE)
         cv.hline(px + 1, 10, 12, hx("ffffff"))
     # selimut biru
-    cv.rect(4, 16, 40, 13, hx("4d78c0"))
+    cv.rect(4, 16, 40, 13, hx(quilt))
     cv.hline(4, 16, 40, hx("e8efff"))
     cv.hline(4, 17, 40, hx("e8efff"))
     for sx in range(8, 44, 8):
-        cv.vline(sx, 18, 11, hx("6a93d8"))
-    cv.hline(4, 28, 40, hx("3a5f9c"))
+        cv.vline(sx, 18, 11, hx(quilt_l))
+    cv.hline(4, 28, 40, hx(quilt_d))
     cv.rect(2, 29, 44, 3, WOOD_D)
     cv.hline(3, 29, 42, WOOD)
-    cv.save("bed")
+    cv.save(name)
 
 
 def make_kitchen():
@@ -448,11 +452,210 @@ def make_shelf():
     cv.save("shelf")
 
 
+# ------------------------------------------------ balai desa & rumah warga
+PLASTER, PLASTER_S, PLASTER_D = hx("ece8dc"), hx("d8d2c2"), hx("b9b2a0")
+SLATE, SLATE_D, SLATE_L = hx("6b6f8a"), hx("4d5068"), hx("8a8ea8")
+THATCH, THATCH_D, THATCH_L = hx("c9a24a"), hx("9a7a30"), hx("e2c070")
+
+
+def arched_window(cv, x, y, w, h):
+    cv.rect(x - 1, y + 3, w + 2, h - 2, WHITE)
+    cv.d.ellipse([x - 1, y - 1, x + w, y + w + 1], fill=WHITE)
+    cv.rect(x, y + 4, w, h - 4, GLASS)
+    cv.d.ellipse([x, y, x + w - 1, y + w], fill=GLASS)
+    cv.rect(x, y + w // 2, w, 1, WHITE)
+    cv.vline(x + w // 2, y, h, WHITE)
+    cv.hline(x + 2, y + 5, 3, GLASS_HL)
+    cv.rect(x - 2, y + h + 1, w + 4, 2, OFFWHITE)
+
+
+def make_hall():
+    cv = Canvas(96, 64)
+    # dinding plester putih dengan garis batu
+    cv.rect(0, 22, 96, 38, PLASTER)
+    for y in range(28, 60, 8):
+        cv.hline(0, y, 96, PLASTER_S)
+    # batu sudut
+    for y in range(24, 60, 6):
+        cv.rect(0, y, 5, 3, STONE_L)
+        cv.hline(0, y + 2, 5, STONE)
+        cv.rect(91, y, 5, 3, STONE_L)
+        cv.hline(91, y + 2, 5, STONE)
+    # pilaster
+    for x in (24, 68):
+        cv.rect(x, 22, 4, 38, PLASTER_S)
+        cv.vline(x, 22, 38, WHITE)
+        cv.vline(x + 3, 22, 38, PLASTER_D)
+        cv.rect(x - 1, 22, 6, 2, PLASTER_D)
+        cv.rect(x - 1, 58, 6, 2, PLASTER_D)
+    # atap sirap abu-abu
+    shingles(cv, 0, 8, 96, 14, SLATE, SLATE_D, SLATE_L)
+    cv.vline(0, 8, 14, SLATE_D)
+    cv.vline(95, 8, 14, SLATE_D)
+    cv.hline(0, 21, 96, hx("34364a"))
+    # kepala tengah (pediment) dengan jam
+    cv.d.polygon([(24, 22), (48, 1), (72, 22)], fill=PLASTER, outline=SLATE_D)
+    cv.d.line([(26, 21), (48, 3)], fill=WHITE)
+    cv.rect(24, 21, 49, 2, PLASTER_D)
+    cv.d.ellipse([41, 8, 55, 20], fill=hx("fbf7ec"), outline=SLATE_D)
+    cv.vline(48, 10, 4, OUTLINE)       # jarum jam
+    cv.hline(48, 14, 3, OUTLINE)
+    for dx, dy in ((48, 9), (48, 19), (42, 14), (54, 14)):
+        cv.px(dx, dy, SLATE_D)
+    # jendela melengkung
+    arched_window(cv, 8, 32, 12, 16)
+    arched_window(cv, 76, 32, 12, 16)
+    # papan nama
+    cv.rect(36, 24, 25, 7, WOOD)
+    cv.frame(36, 24, 25, 7, WOOD_D)
+    text(cv, "BALAI", 38, 25, hx("fbf0cf"), shadow=None, scale=1)
+    # pintu ganda
+    cv.rect(37, 33, 22, 27, WOOD_D)
+    for lx in (38, 48):
+        cv.rect(lx, 34, 10, 26, WOOD)
+        cv.frame(lx + 1, 36, 8, 10, WOOD_D)
+        cv.rect(lx + 2, 37, 6, 8, WOOD_L)
+        cv.frame(lx + 1, 48, 8, 10, WOOD_D)
+        cv.rect(lx + 2, 49, 6, 8, WOOD_L)
+    cv.rect(46, 46, 2, 3, GOLD)
+    cv.rect(49, 46, 2, 3, GOLD)
+    # lampu
+    for lx in (32, 62):
+        cv.rect(lx, 38, 2, 4, GOLD)
+        cv.px(lx, 37, OUTLINE)
+        cv.px(lx + 1, 37, OUTLINE)
+    # pondasi & tangga
+    stone_base(cv, 0, 60, 96, 4)
+    cv.rect(30, 60, 36, 4, STONE_L)
+    cv.hline(30, 60, 36, WHITE)
+    cv.hline(30, 62, 36, STONE)
+    cv.save("hall")
+
+
+def make_resident_house():
+    cv = Canvas(64, 64)
+    # dinding plester + rangka kayu
+    cv.rect(0, 24, 64, 36, hx("f2dcc6"))
+    for y in range(28, 58, 6):
+        cv.hline(3, y, 58, hx("e8cdb4"))
+    cv.d.line([(3, 56), (13, 28)], fill=WOOD_D, width=2)
+    cv.d.line([(48, 28), (60, 56)], fill=WOOD_D, width=2)
+    cv.rect(0, 24, 64, 3, WOOD_D)
+    cv.rect(0, 57, 64, 3, WOOD_D)
+    for x in (0, 14, 31, 61):
+        cv.rect(x, 24, 3, 36, WOOD_D)
+        cv.vline(x, 24, 36, WOOD)
+    # tong air
+    cv.rect(3, 45, 10, 12, hx("8a5a34"))
+    cv.hline(3, 45, 10, hx("a8794a"))
+    for hy in (47, 54):
+        cv.hline(3, hy, 10, hx("4a4a50"))
+    cv.vline(5, 46, 10, hx("6e4524"))
+    cv.vline(10, 46, 10, hx("6e4524"))
+    cv.rect(4, 44, 8, 2, hx("3a7ab8"))
+    # atap jerami
+    cv.rect(0, 5, 64, 19, THATCH)
+    for x in range(0, 64, 3):
+        cv.vline(x, 5, 19, THATCH_D if (x // 3) % 2 == 0 else hx("b08a3a"))
+    for y in range(8, 24, 5):
+        cv.hline(0, y, 64, THATCH_D)
+    cv.hline(0, 5, 64, THATCH_L)
+    cv.hline(1, 6, 62, THATCH_L)
+    for x in range(0, 64, 4):  # tepi bawah bergerigi
+        cv.vline(x, 22, 2 if (x // 4) % 2 else 3, THATCH_D)
+    cv.rect(0, 24, 64, 1, hx("6a4e18"))
+    cv.vline(0, 5, 19, THATCH_D)
+    cv.vline(63, 5, 19, THATCH_D)
+    # cerobong batu bata
+    cv.rect(8, 0, 9, 9, BRICK)
+    for y in range(1, 9, 3):
+        cv.hline(8, y, 9, MORTAR)
+    cv.rect(7, 0, 11, 2, STONE_L)
+    cv.hline(7, 1, 11, STONE_D)
+    # pintu & jendela
+    door(cv, 17, 30, 14, 28, glass_top=False)
+    cv.rect(15, 58, 18, 2, STONE_L)
+    window(cv, 40, 34, 12, 11)
+    cv.save("resident_house")
+
+
+def make_podium():
+    cv = Canvas(96, 16)
+    cv.rect(0, 3, 96, 13, WOOD)
+    cv.rect(0, 1, 96, 4, WOOD_L)
+    cv.hline(0, 1, 96, WOOD_HL)
+    cv.hline(0, 5, 96, WOOD_D)
+    cv.frame(0, 1, 96, 15, WOOD_D)
+    for x in range(0, 96, 24):
+        cv.frame(x + 2, 8, 20, 7, WOOD_D)
+        cv.rect(x + 3, 9, 18, 5, hx("8a5a34"))
+    # spanduk hijau lambang desa di tengah
+    cv.rect(38, 6, 20, 10, hx("3f8f5a"))
+    cv.frame(38, 6, 20, 10, hx("2a6a40"))
+    cv.vline(48, 8, 6, hx("5ccf62"))
+    cv.d.polygon([(48, 8), (44, 10), (48, 11)], fill=hx("5ccf62"))
+    cv.d.polygon([(48, 10), (52, 8), (48, 12)], fill=hx("7ee684"))
+    cv.rect(46, 14, 5, 1, hx("c9a05a"))
+    # mikrofon & lonceng kecil
+    cv.rect(12, 0, 2, 2, hx("c0c0c8"))
+    cv.rect(80, 0, 6, 2, GOLD)
+    cv.save("podium")
+
+
+def make_bench():
+    cv = Canvas(48, 16)
+    cv.rect(2, 0, 44, 6, WOOD_L)
+    for x in range(4, 46, 6):
+        cv.vline(x, 1, 4, WOOD_D)
+    cv.hline(2, 0, 44, WOOD_HL)
+    cv.rect(2, 6, 44, 4, WOOD)
+    cv.hline(2, 6, 44, WOOD_HL)
+    cv.hline(2, 9, 44, WOOD_D)
+    for lx in (4, 40):
+        cv.rect(lx, 10, 3, 6, WOOD_D)
+    cv.rect(2, 0, 2, 10, WOOD_D)
+    cv.rect(44, 0, 2, 10, WOOD_D)
+    cv.save("bench")
+
+
+def make_table():
+    cv = Canvas(48, 32)
+    # kaki
+    for lx in (5, 40):
+        cv.rect(lx, 22, 3, 10, WOOD_D)
+    cv.rect(2, 4, 44, 20, WOOD)
+    cv.frame(2, 4, 44, 20, WOOD_D)
+    # taplak kotak-kotak
+    for ty in range(2):
+        for tx in range(7):
+            c = hx("f7f3ea") if (tx + ty) % 2 == 0 else hx("d94a3d")
+            cv.rect(5 + tx * 5, 7 + ty * 8, 5, 8, c)
+    cv.hline(5, 23, 36, hx("a8322a"))
+    # vas bunga
+    cv.rect(20, 9, 6, 6, hx("7aa7e0"))
+    cv.hline(20, 9, 6, hx("c4dcf5"))
+    cv.vline(23, 4, 5, hx("3f8f3f"))
+    for fx, fy, fc in ((21, 3, RED), (24, 2, hx("f0d040")), (22, 5, hx("f090b0"))):
+        cv.rect(fx, fy, 2, 2, fc)
+    # roti & mangkuk
+    cv.rect(8, 10, 8, 4, hx("c8863a"))
+    cv.hline(8, 10, 8, hx("e0a85a"))
+    cv.rect(32, 10, 7, 4, hx("e9e4d6"))
+    cv.rect(33, 9, 5, 2, hx("e0603c"))
+    cv.save("table")
+
+
 if __name__ == "__main__":
     make_house()
     make_shop()
     make_floors()
     make_bed()
+    make_bed("bed_green", "5a9a5a", "74b874", "3f7a3f")
+    make_hall()
+    make_resident_house()
+    make_podium()
+    make_bench()
+    make_table()
     make_kitchen()
     make_tv()
     make_counter()

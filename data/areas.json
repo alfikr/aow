@@ -196,7 +196,8 @@
 					4
 				],
 				"color": "9aa0a8",
-				"label": "Balai Desa"
+				"label": "",
+				"sprite": "hall"
 			},
 			{
 				"kind": "building",
@@ -207,7 +208,8 @@
 					4
 				],
 				"color": "b88a6a",
-				"label": "Rumah Warga"
+				"label": "",
+				"sprite": "resident_house"
 			},
 			{
 				"kind": "building",
@@ -288,11 +290,11 @@
 				"rect": [
 					16,
 					7,
-					1,
+					2,
 					1
 				],
-				"color": "5a3a1a",
-				"label": "Pintu",
+				"color": "8a5a2b",
+				"label": "",
 				"to": "hall",
 				"spawn": [
 					14,
@@ -307,8 +309,8 @@
 					1,
 					1
 				],
-				"color": "5a3a1a",
-				"label": "Pintu",
+				"color": "8a5a2b",
+				"label": "",
 				"to": "house",
 				"spawn": [
 					14,
@@ -649,7 +651,8 @@
 					1
 				],
 				"color": "7a5230",
-				"label": "Podium"
+				"label": "",
+				"sprite": "podium"
 			},
 			{
 				"kind": "building",
@@ -660,7 +663,8 @@
 					1
 				],
 				"color": "8c5a30",
-				"label": "Bangku"
+				"label": "",
+				"sprite": "bench"
 			},
 			{
 				"kind": "building",
@@ -671,7 +675,8 @@
 					1
 				],
 				"color": "8c5a30",
-				"label": "Bangku"
+				"label": "",
+				"sprite": "bench"
 			},
 			{
 				"kind": "exit",
@@ -795,7 +800,8 @@
 					2
 				],
 				"color": "8c5a30",
-				"label": "Meja"
+				"label": "",
+				"sprite": "table"
 			},
 			{
 				"kind": "building",
@@ -806,7 +812,8 @@
 					2
 				],
 				"color": "6e86a8",
-				"label": "Kasur"
+				"label": "",
+				"sprite": "bed_green"
 			},
 			{
 				"kind": "exit",

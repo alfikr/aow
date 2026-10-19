@@ -59,6 +59,16 @@ func _ready() -> void:
 	player.travel("home", [14, 11])
 	await _shot(out, "05b_home")
 
+	player.travel("hall", [14, 11])
+	main.get_node("Npcs").snap_all()
+	Clock.minutes = 10.0 * 60
+	main.get_node("Npcs").snap_all()
+	await _shot(out, "05c_hall")
+
+	player.travel("house", [14, 11])
+	main.get_node("Npcs").snap_all()
+	await _shot(out, "05d_house")
+
 	player.travel("coop", [14, 11])
 	await _shot(out, "06_coop")
 
