@@ -118,6 +118,37 @@ func _ready() -> void:
 	await _shot(out, "10_inventory")
 	menu.close()
 
+	# musim & cuaca di desa dan peternakan
+	var combos := [
+		[0, Clock.Weather.SUNNY, 600.0, "s0_spring"],
+		[1, Clock.Weather.SUNNY, 600.0, "s1_summer"],
+		[1, Clock.Weather.SUNNY, 1230.0, "s1_summer_night"],
+		[2, Clock.Weather.SUNNY, 600.0, "s2_autumn"],
+		[3, Clock.Weather.SNOW, 600.0, "s3_winter_snow"],
+		[0, Clock.Weather.RAINY, 600.0, "s0_rain"],
+	]
+	for c in combos:
+		player.travel("village", [14, 9])
+		Clock.season = c[0]
+		Clock.weather = c[1]
+		Clock.minutes = c[2]
+		Events.season_changed.emit(c[0])
+		main.get_node("Npcs").snap_all()
+		for i in 25:
+			await get_tree().process_frame
+		await _shot(out, "season_village_" + c[3])
+	player.travel("farm", [12, 14])
+	Clock.season = 3
+	Clock.weather = Clock.Weather.SNOW
+	Clock.minutes = 600.0
+	Events.season_changed.emit(3)
+	for i in 25:
+		await get_tree().process_frame
+	await _shot(out, "season_farm_winter")
+	Clock.season = 0
+	Clock.weather = Clock.Weather.SUNNY
+	Events.season_changed.emit(0)
+
 	menu.open(menu.Mode.PAUSE)
 	await _shot(out, "11_pause")
 	menu.open(menu.Mode.SETTINGS)

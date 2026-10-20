@@ -11,6 +11,8 @@ var sfx := {}
 var players: Array = []
 var music: AudioStreamPlayer
 var current := ""
+var ambient: AudioStreamPlayer
+var ambient_current := ""
 var auto_music := true
 var check_t := 0.0
 
@@ -34,6 +36,10 @@ func _ready() -> void:
 	music = AudioStreamPlayer.new()
 	music.bus = "Music"
 	add_child(music)
+	ambient = AudioStreamPlayer.new()
+	ambient.bus = "SFX"
+	ambient.volume_db = -9.0
+	add_child(ambient)
 	Events.sfx.connect(play)
 	Settings.apply()
 
@@ -42,6 +48,8 @@ func _exit_tree() -> void:
 	# lepaskan referensi aliran agar tidak ada peringatan resource saat keluar
 	music.stop()
 	music.stream = null
+	ambient.stop()
+	ambient.stream = null
 	for p in players:
 		p.stop()
 		p.stream = null
@@ -81,6 +89,30 @@ func set_track(track: String) -> void:
 	music.play()
 
 
+func set_ambient(name: String) -> void:
+	if name == ambient_current:
+		return
+	ambient_current = name
+	var s := _load(name) if name != "" else null
+	if s == null:
+		ambient.stop()
+		return
+	if s is AudioStreamWAV:
+		s.loop_mode = AudioStreamWAV.LOOP_FORWARD
+		s.loop_begin = 0
+		s.loop_end = s.data.size() / 2
+	ambient.stream = s
+	ambient.play()
+
+
+## Suara latar menurut cuaca: hujan terdengar di luar ruangan.
+func choose_ambient() -> String:
+	var world := get_tree().get_first_node_in_group("world") as World
+	if world == null or world.is_indoor():
+		return ""
+	return "ambient_rain" if Clock.weather == Clock.Weather.RAINY else ""
+
+
 func choose_track() -> String:
 	var world := get_tree().get_first_node_in_group("world") as World
 	if world == null:
@@ -95,3 +127,4 @@ func _process(delta: float) -> void:
 	if auto_music and check_t >= 1.0:
 		check_t = 0.0
 		set_track(choose_track())
+		set_ambient(choose_ambient())

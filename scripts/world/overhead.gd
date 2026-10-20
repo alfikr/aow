@@ -9,6 +9,7 @@ extends Node2D
 func _ready() -> void:
 	Events.area_changed.connect(func(_id): queue_redraw())
 	Events.game_loaded.connect(queue_redraw)
+	Events.season_changed.connect(func(_s): queue_redraw())
 
 
 func _draw() -> void:
@@ -16,7 +17,7 @@ func _draw() -> void:
 	for f in world.draw_list:
 		if not f.raw.get("overhead", false):
 			continue
-		var tex := Sprites.tex(str(f.raw.get("sprite", "")))
+		var tex := Sprites.tex_season(str(f.raw.get("sprite", "")))
 		if tex == null:
 			continue
 		var d := world.sprite_dest(f, tex)

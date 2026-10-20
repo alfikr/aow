@@ -471,6 +471,51 @@ func _ready() -> void:
 	check(farm.growth_stage("lobak", 0) == 0 and farm.growth_stage("lobak", 2) == 1 and farm.growth_stage("lobak", 3) == 2 and farm.growth_stage("lobak", 4) == 3, "tahap tumbuh tanaman 0-3")
 	world.set_area("farm")
 
+
+	# --- musim & cuaca visual
+	Clock.season = 0
+	check(Sprites.tex_season("grass").resource_path.ends_with("/grass.png"), "musim semi memakai tekstur dasar")
+	for sidx in [1, 2, 3]:
+		Clock.season = sidx
+		for nm in Sprites.SEASONAL:
+			var tv := Sprites.tex_season(nm)
+			check(tv != null and tv.resource_path.ends_with("_%s.png" % Sprites.SEASON_KEYS[sidx]), "variasi %s musim %d" % [nm, sidx]) if nm in ["grass", "tree_oak", "water"] else null
+		check(Sprites.tex_season("bin").resource_path.ends_with("/bin.png"), "sprite non-musiman tidak berubah di musim %d" % sidx)
+	Clock.season = 1
+	check(WeatherFx.kind_for(false, Clock.Weather.RAINY, 1, 600.0) == "rain", "hujan -> partikel hujan")
+	check(WeatherFx.kind_for(false, Clock.Weather.SNOW, 3, 600.0) == "snow", "salju -> partikel salju")
+	check(WeatherFx.kind_for(false, Clock.Weather.SUNNY, 0, 600.0) == "petals", "cerah musim semi -> kelopak")
+	check(WeatherFx.kind_for(false, Clock.Weather.SUNNY, 2, 600.0) == "leaves", "cerah musim gugur -> daun gugur")
+	check(WeatherFx.kind_for(false, Clock.Weather.SUNNY, 1, 600.0) == "" and WeatherFx.kind_for(false, Clock.Weather.SUNNY, 1, 20 * 60.0) == "fireflies", "kunang-kunang hanya malam musim panas")
+	check(WeatherFx.kind_for(false, Clock.Weather.SUNNY, 3, 600.0) == "", "cerah musim dingin tanpa partikel")
+	check(WeatherFx.kind_for(true, Clock.Weather.RAINY, 1, 600.0) == "", "tidak ada cuaca di dalam ruangan")
+
+	var wfx: WeatherFx = main.get_node("Weather")
+	world.set_area("farm")
+	Clock.weather = Clock.Weather.RAINY
+	wfx._process(0.1)
+	check(wfx.kind == "rain" and wfx.parts.size() == WeatherFx.COUNTS["rain"], "node cuaca membuat 150 tetes hujan")
+	for i in 30:
+		wfx._process(0.1)
+	check(wfx.parts.size() == WeatherFx.COUNTS["rain"] and wfx.parts.all(func(p): return p.pos.y < 600.0), "tetes hujan didaur ulang (tidak lepas layar)")
+	world.set_area("shop")
+	wfx._process(0.1)
+	check(wfx.kind == "" and wfx.parts.is_empty(), "partikel hilang saat masuk ruangan")
+	check(Audio.choose_ambient() == "", "tanpa suara hujan di dalam ruangan")
+	world.set_area("farm")
+	check(Audio.choose_ambient() == "ambient_rain" and ResourceLoader.exists("res://assets/audio/ambient_rain.wav"), "suara hujan di luar ruangan saat hujan")
+	Clock.weather = Clock.Weather.SUNNY
+	check(Audio.choose_ambient() == "", "tanpa suara hujan saat cerah")
+	var winter_decor := 0
+	var summer_decor := 0
+	for f in Data.areas["village"].features:
+		if int(f.get("season", -1)) == 3:
+			winter_decor += 1
+		if int(f.get("season", -1)) == 1:
+			summer_decor += 1
+	check(winter_decor > 0 and summer_decor > 0, "desa punya hiasan musim dingin & panas")
+	Clock.season = 0
+
 	# dialog lewat menu
 	Inventory.add("crop:lobak")
 	menu.open_dialog("raka")

@@ -23,7 +23,11 @@ var water_phase := 0
 func _ready() -> void:
 	add_to_group("saveable")
 	add_to_group("world")
-	Events.game_loaded.connect(func(): if area_id == "mine": set_area("mine"))
+	Events.game_loaded.connect(func():
+		if area_id == "mine":
+			set_area("mine")
+		queue_redraw())
+	Events.season_changed.connect(func(_s): queue_redraw())
 	set_area(area_id)
 
 
@@ -149,14 +153,14 @@ func _draw() -> void:
 	var T := Layout.TILE
 	var font := ThemeDB.fallback_font
 	var full := Rect2(0, 0, Layout.COLS * T, Layout.ROWS * T)
-	var ground_tex := Sprites.tex(str(area.get("ground_tile", "")))
+	var ground_tex := Sprites.tex_season(str(area.get("ground_tile", "")))
 	if ground_tex != null:
 		draw_texture_rect(ground_tex, full, true)
 	else:
 		draw_rect(full, Color.html(area.get("ground", "59a64d")))
 	if area_id == "farm":
 		var field := Rect2(Layout.FIELD.position * T, Layout.FIELD.size * T)
-		var field_tex := Sprites.tex("grass_field")
+		var field_tex := Sprites.tex_season("grass_field")
 		if field_tex != null:
 			draw_texture_rect(field_tex, field, true)
 		else:
@@ -169,11 +173,16 @@ func _draw_feature(f: Dictionary, font: Font) -> void:
 	var T := Layout.TILE
 	var r := Rect2(f.rect.position * T, f.rect.size * T)
 	var raw: Dictionary = f.raw
+	# hiasan musiman; bunga hanya di musim semi dan panas
+	if raw.has("season") and int(raw.season) != Clock.season:
+		return
+	if f.kind == "overlay" and str(raw.get("sprite", "")).begins_with("flowers") and Clock.season >= 2:
+		return
 	if f.kind == "water" and raw.get("tile", "") == "water" and Sprites.tex("water") != null:
-		_draw_water(r)
+		_draw_water(r, bool(raw.get("season_fixed", false)))
 		return
 	var name: String = raw.get("sprite", raw.get("tile", ""))
-	var tex := Sprites.tex(name) if name != "" else null
+	var tex := Sprites.tex_season(name) if name != "" else null
 	if tex != null:
 		if raw.has("tile"):
 			draw_texture_rect(tex, r, true)
@@ -213,9 +222,9 @@ func _draw_feature(f: Dictionary, font: Font) -> void:
 
 
 ## Air dua bingkai yang bergantian per tile + busa tipis di tepi.
-func _draw_water(r: Rect2) -> void:
+func _draw_water(r: Rect2, fixed := false) -> void:
 	var T := Layout.TILE
-	var tex := Sprites.tex("water")
+	var tex := Sprites.tex("water") if fixed else Sprites.tex_season("water")
 	for x in int(r.size.x / T):
 		for y in int(r.size.y / T):
 			var frame := (water_phase + x + y) % 2

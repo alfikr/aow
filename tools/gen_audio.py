@@ -156,4 +156,17 @@ MAJOR = [0, 2, 4, 5, 7, 9, 11]
 render_track("music_day", 96, -9, PENTA, [0, -3, -7, -5], 8, 0.7, lead_soft, 0.16, 11)          # C mayor-ish
 render_track("music_night", 66, -12, MINOR_PENTA, [0, -2, -4, -2], 8, 0.4, lead_soft, 0.14, 23)
 render_track("music_indoor", 108, -2, MAJOR, [0, 5, 7, 5], 8, 0.65, lead_bell, 0.12, 5, octave=12)
+# hujan ambient (berulang): desis halus + tetes acak
+random.seed(21)
+rain = noise(5.0, 0.5, 0.0, 3)
+for _ in range(260):
+    start = random.randrange(0, len(rain) - 400)
+    drop = sine(random.uniform(1800, 4200), 0.012, random.uniform(0.04, 0.12), 180, 0.0005, 0.004)
+    for i, v in enumerate(drop):
+        rain[start + i] += v
+fade = n(0.04)
+for i in range(fade):
+    rain[i] *= i / fade
+    rain[-1 - i] *= i / fade
+save("ambient_rain", rain, 0.5)
 print("selesai:", sorted(os.listdir(OUT)))

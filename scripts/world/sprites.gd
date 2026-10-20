@@ -13,6 +13,10 @@ const ANIMAL_CELLS := {
 	"dog": Vector2(36, 28),
 }
 
+## Tekstur yang punya variasi per musim: <nama>_summer / _autumn / _winter (musim semi = dasar).
+const SEASONAL := ["grass", "grass_field", "tree_oak", "tree_pine", "bush", "path", "water", "fence_h"]
+const SEASON_KEYS := ["", "summer", "autumn", "winter"]
+
 static var cache := {}
 
 
@@ -21,6 +25,15 @@ static func tex(sheet: String) -> Texture2D:
 		var path := DIR + sheet + ".png"
 		cache[sheet] = load(path) as Texture2D if ResourceLoader.exists(path) else null
 	return cache[sheet]
+
+
+## Tekstur menurut musim berjalan; kembali ke versi dasar bila variasinya belum ada.
+static func tex_season(sheet: String) -> Texture2D:
+	if Clock.season > 0 and SEASONAL.has(sheet):
+		var t := tex("%s_%s" % [sheet, SEASON_KEYS[Clock.season]])
+		if t != null:
+			return t
+	return tex(sheet)
 
 
 static func char_row(facing: Vector2i) -> int:

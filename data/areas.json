@@ -593,6 +593,120 @@
 					1
 				],
 				"sprite": "lily"
+			},
+			{
+				"kind": "overlay",
+				"rect": [
+					0,
+					4,
+					1,
+					1
+				],
+				"sprite": "sunflowers",
+				"season": 1,
+				"native": true
+			},
+			{
+				"kind": "overlay",
+				"rect": [
+					7,
+					4,
+					1,
+					1
+				],
+				"sprite": "sunflowers",
+				"season": 1,
+				"native": true
+			},
+			{
+				"kind": "overlay",
+				"rect": [
+					26,
+					7,
+					1,
+					1
+				],
+				"sprite": "sunflowers",
+				"season": 1,
+				"native": true
+			},
+			{
+				"kind": "overlay",
+				"rect": [
+					9,
+					5,
+					1,
+					1
+				],
+				"sprite": "leaf_pile",
+				"season": 2
+			},
+			{
+				"kind": "overlay",
+				"rect": [
+					23,
+					14,
+					1,
+					1
+				],
+				"sprite": "leaf_pile",
+				"season": 2
+			},
+			{
+				"kind": "overlay",
+				"rect": [
+					26,
+					5,
+					1,
+					1
+				],
+				"sprite": "leaf_pile",
+				"season": 2
+			},
+			{
+				"kind": "overlay",
+				"rect": [
+					8,
+					7,
+					1,
+					1
+				],
+				"sprite": "snowman",
+				"season": 3,
+				"native": true
+			},
+			{
+				"kind": "overlay",
+				"rect": [
+					6,
+					3,
+					1,
+					1
+				],
+				"sprite": "snow_pile",
+				"season": 3
+			},
+			{
+				"kind": "overlay",
+				"rect": [
+					0,
+					2,
+					1,
+					1
+				],
+				"sprite": "snow_pile",
+				"season": 3
+			},
+			{
+				"kind": "overlay",
+				"rect": [
+					25,
+					14,
+					1,
+					1
+				],
+				"sprite": "snow_pile",
+				"season": 3
 			}
 		],
 		"ground_tile": "grass"
@@ -1396,6 +1510,119 @@
 					1
 				],
 				"sprite": "flowers_blue"
+			},
+			{
+				"kind": "overlay",
+				"rect": [
+					0,
+					7,
+					1,
+					1
+				],
+				"sprite": "sunflowers",
+				"season": 1,
+				"native": true
+			},
+			{
+				"kind": "overlay",
+				"rect": [
+					28,
+					7,
+					1,
+					1
+				],
+				"sprite": "sunflowers",
+				"season": 1,
+				"native": true
+			},
+			{
+				"kind": "overlay",
+				"rect": [
+					10,
+					2,
+					1,
+					1
+				],
+				"sprite": "leaf_pile",
+				"season": 2
+			},
+			{
+				"kind": "overlay",
+				"rect": [
+					12,
+					12,
+					1,
+					1
+				],
+				"sprite": "leaf_pile",
+				"season": 2
+			},
+			{
+				"kind": "overlay",
+				"rect": [
+					21,
+					13,
+					1,
+					1
+				],
+				"sprite": "leaf_pile",
+				"season": 2
+			},
+			{
+				"kind": "overlay",
+				"rect": [
+					27,
+					5,
+					1,
+					1
+				],
+				"sprite": "snowman",
+				"season": 3,
+				"native": true
+			},
+			{
+				"kind": "overlay",
+				"rect": [
+					1,
+					7,
+					1,
+					1
+				],
+				"sprite": "snow_pile",
+				"season": 3
+			},
+			{
+				"kind": "overlay",
+				"rect": [
+					5,
+					7,
+					1,
+					1
+				],
+				"sprite": "snow_pile",
+				"season": 3
+			},
+			{
+				"kind": "overlay",
+				"rect": [
+					8,
+					7,
+					1,
+					1
+				],
+				"sprite": "snow_pile",
+				"season": 3
+			},
+			{
+				"kind": "overlay",
+				"rect": [
+					22,
+					3,
+					1,
+					1
+				],
+				"sprite": "snow_pile",
+				"season": 3
 			}
 		],
 		"ground_tile": "grass"
@@ -1863,7 +2090,8 @@
 				"color": "2f6fcf",
 				"label": "",
 				"fish": "beach",
-				"tile": "water"
+				"tile": "water",
+				"season_fixed": true
 			},
 			{
 				"kind": "exit",
@@ -2537,6 +2765,85 @@
 					1
 				],
 				"sprite": "flowers_blue"
+			},
+			{
+				"kind": "overlay",
+				"rect": [
+					0,
+					7,
+					1,
+					1
+				],
+				"sprite": "sunflowers",
+				"season": 1,
+				"native": true
+			},
+			{
+				"kind": "overlay",
+				"rect": [
+					28,
+					7,
+					1,
+					1
+				],
+				"sprite": "sunflowers",
+				"season": 1,
+				"native": true
+			},
+			{
+				"kind": "overlay",
+				"rect": [
+					4,
+					12,
+					1,
+					1
+				],
+				"sprite": "leaf_pile",
+				"season": 2
+			},
+			{
+				"kind": "overlay",
+				"rect": [
+					22,
+					13,
+					1,
+					1
+				],
+				"sprite": "leaf_pile",
+				"season": 2
+			},
+			{
+				"kind": "overlay",
+				"rect": [
+					2,
+					7,
+					1,
+					1
+				],
+				"sprite": "snow_pile",
+				"season": 3
+			},
+			{
+				"kind": "overlay",
+				"rect": [
+					8,
+					7,
+					1,
+					1
+				],
+				"sprite": "snow_pile",
+				"season": 3
+			},
+			{
+				"kind": "overlay",
+				"rect": [
+					18,
+					7,
+					1,
+					1
+				],
+				"sprite": "snow_pile",
+				"season": 3
 			}
 		],
 		"ground_tile": "grass"

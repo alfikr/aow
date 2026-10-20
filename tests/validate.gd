@@ -144,6 +144,10 @@ func _ready() -> void:
 			for key in ["sprite", "tile"]:
 				if f.has(key) and not ResourceLoader.exists("res://assets/sprites/%s.png" % f[key]):
 					bad("%s: sprite '%s' tidak ada" % [id, f[key]])
+	for nm in Sprites.SEASONAL:
+		for key in ["summer", "autumn", "winter"]:
+			if not ResourceLoader.exists("res://assets/sprites/%s_%s.png" % [nm, key]):
+				bad("variasi musim hilang: %s_%s.png" % [nm, key])
 	for cid in Data.crops:
 		if not ResourceLoader.exists("res://assets/sprites/crop_%s.png" % cid):
 			bad("tanaman %s tidak punya sprite crop_%s.png" % [cid, cid])
