@@ -39,7 +39,15 @@ func _ready() -> void:
 	player.travel("village", [15, 9])
 	Clock.minutes = 10.0 * 60
 	main.get_node("Npcs").snap_all()
+	var dog: Node2D = main.get_node("Dog")
+	dog._process(0.1)
 	await _shot(out, "02_village")
+
+	# pemain & anjing di peternakan berbagai arah
+	player.travel("farm", [20, 14])
+	for dir in [Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP]:
+		player.facing = dir
+		await _shot(out, "02b_player_%d_%d" % [dir.x, dir.y])
 
 	player.travel("shop", [14, 11])
 	main.get_node("Npcs").snap_all()

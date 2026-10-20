@@ -120,6 +120,12 @@ func _ready() -> void:
 					or Data.products.has(item.substr(5)) or Data.fish.has(item.substr(5))
 				if not ok:
 					bad("%s: selera %s tidak dikenal (%s)" % [nid, taste, item])
+	for nid in Data.npcs:
+		if not ResourceLoader.exists("res://assets/sprites/char_%s.png" % nid):
+			bad("NPC %s tidak punya sprite char_%s.png" % [nid, nid])
+	for aid in Data.animals:
+		if not Data.animals[aid].has("sprite") or not ResourceLoader.exists("res://assets/sprites/%s.png" % Data.animals[aid].sprite):
+			bad("hewan %s tidak punya sprite" % aid)
 	for fid in Data.fish:
 		if Data.fish[fid].places.is_empty() or Data.fish[fid].seasons.is_empty():
 			bad("ikan %s tanpa tempat/musim" % fid)

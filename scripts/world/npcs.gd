@@ -17,6 +17,7 @@ var state := {}
 var where := {}
 var goal := {}
 var step_t := 0.0
+var vis := {}   # id -> {pos, area, facing, moving} (animasi, runtime)
 
 
 func _ready() -> void:
@@ -79,6 +80,7 @@ func snap_all() -> void:
 	for id in Data.npcs:
 		where[id] = current_goal(id)
 		goal[id] = where[id]
+		vis.erase(id)
 
 
 func npc_at(area_id: String, c: Vector2i) -> String:
@@ -93,12 +95,41 @@ func npc_at(area_id: String, c: Vector2i) -> String:
 func _process(delta: float) -> void:
 	for id in Data.npcs:
 		goal[id] = current_goal(id)
+	_animate(delta)
 	step_t += delta
 	if step_t >= STEP_TIME:
 		step_t = 0.0
 		for id in Data.npcs:
 			_advance(id)
 	queue_redraw()
+
+
+## Geser posisi gambar menuju tile tujuan dan tentukan arah hadap.
+func _animate(delta: float) -> void:
+	for id in where:
+		var w: Dictionary = where[id]
+		var target := Vector2(w.cell * Layout.TILE)
+		if not vis.has(id) or vis[id].area != w.area:
+			vis[id] = {"pos": target, "area": w.area, "moving": false,
+				"facing": vis[id].facing if vis.has(id) else Vector2i.DOWN}
+			continue
+		var v: Dictionary = vis[id]
+		var d: Vector2 = target - v.pos
+		if d.length() > 0.5:
+			v.facing = Vector2i(int(signf(d.x)), 0) if absf(d.x) >= absf(d.y) else Vector2i(0, int(signf(d.y)))
+			v.pos = v.pos.move_toward(target, Layout.TILE / STEP_TIME * delta)
+			v.moving = true
+		else:
+			v.pos = target
+			v.moving = false
+
+
+## NPC menoleh ke pemain saat diajak bicara.
+func face_towards(id: String, from_cell: Vector2i) -> void:
+	if not vis.has(id):
+		return
+	var d: Vector2i = from_cell - where[id].cell
+	vis[id].facing = Vector2i(signi(d.x), 0) if absi(d.x) >= absi(d.y) else Vector2i(0, signi(d.y))
 
 
 func _advance(id: String) -> void:
@@ -254,17 +285,18 @@ func _propose(id: String) -> String:
 # -------------------------------------------------------------- gambar
 
 func _draw() -> void:
-	var T := Layout.TILE
 	var font := ThemeDB.fallback_font
 	for id in where:
-		if where[id].area != world.area_id:
+		if where[id].area != world.area_id or not vis.has(id):
 			continue
 		var info: Dictionary = Data.npcs[id]
-		var p := Vector2(where[id].cell) * T
-		draw_rect(Rect2(p + Vector2(7, 12), Vector2(18, 18)), Color.html(info.color))
-		draw_circle(p + Vector2(16, 9), 7, Color(0.96, 0.82, 0.68))
-		draw_rect(Rect2(p + Vector2(9, 1), Vector2(14, 5)), Color.html(info.hair))
-		draw_string(font, p + Vector2(-4, -2), info.name, HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color(1, 1, 1, 0.95))
+		var v: Dictionary = vis[id]
+		var p: Vector2 = v.pos
+		if not Sprites.draw_char(self, "char_" + id, p, v.facing, Sprites.walk_frame(v.moving)):
+			draw_rect(Rect2(p + Vector2(7, 12), Vector2(18, 18)), Color.html(info.color))
+			draw_circle(p + Vector2(16, 9), 7, Color(0.96, 0.82, 0.68))
+			draw_rect(Rect2(p + Vector2(9, 1), Vector2(14, 5)), Color.html(info.hair))
+		draw_string(font, p + Vector2(-32, -20), info.name, HORIZONTAL_ALIGNMENT_CENTER, 96, 10, Color(1, 1, 1, 0.95))
 
 
 func save_data() -> Dictionary:

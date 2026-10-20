@@ -6,6 +6,7 @@ extends Node2D
 ## animals: [{type, name, fed, product, petted, affection, cell: Vector2i}]
 
 const WANDER_INTERVAL := 1.2
+const WALK_SPEED := 60.0   # px/detik
 
 @onready var world: World = $"../World"
 
@@ -45,11 +46,22 @@ func add_animal(type: String) -> bool:
 	for slot in int(Data.animals[type].capacity):
 		var c := _slot_cell(type, slot)
 		if animal_at(Data.animals[type].area, c) < 0:
-			animals.append({"type": type, "name": "%s %d" % [Data.animals[type].name, count_of(type) + 1],
-				"fed": false, "product": false, "petted": false, "affection": 0, "cell": c})
+			animals.append(_with_visuals({"type": type, "name": "%s %d" % [Data.animals[type].name, count_of(type) + 1],
+				"fed": false, "product": false, "petted": false, "affection": 0, "cell": c}))
 			queue_redraw()
 			return true
 	return false
+
+
+## Menambah bidang animasi (hanya runtime, tidak disimpan).
+func _with_visuals(a: Dictionary) -> Dictionary:
+	a["pos"] = Vector2(a.cell * Layout.TILE)
+	a["right"] = false
+	a["moving"] = false
+	a["idle_t"] = 0.0
+	a["next_peck"] = randf_range(2.0, 5.0)
+	a["peck_t"] = 0.0
+	return a
 
 
 func area_of(a: Dictionary) -> String:
@@ -100,20 +112,52 @@ func _on_day_ended(_passed_out: bool) -> void:
 
 
 func _process(delta: float) -> void:
-	wander_t += delta
-	if wander_t < WANDER_INTERVAL:
-		return
-	wander_t = 0.0
-	var player := get_tree().get_first_node_in_group("player") as Player
+	var visible_here := false
 	for a in animals:
-		if area_of(a) != world.area_id or randf() > 0.4:
+		if area_of(a) != world.area_id:
 			continue
-		var dir: Vector2i = [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT].pick_random()
-		var target: Vector2i = a.cell + dir
-		if world.walkable(target) and animal_at(world.area_id, target) < 0 \
-				and not (player != null and player.cell == target):
-			a.cell = target
-	queue_redraw()
+		visible_here = true
+		var target := Vector2(a.cell * Layout.TILE)
+		var d: Vector2 = target - a.pos
+		a.moving = d.length() > 0.5
+		if a.moving:
+			if absf(d.x) > 0.5:
+				a.right = d.x > 0.0
+			a.pos = a.pos.move_toward(target, WALK_SPEED * delta)
+		else:
+			a.pos = target
+			a.idle_t += delta
+			if a.idle_t >= a.next_peck:
+				a.idle_t = 0.0
+				a.next_peck = randf_range(2.0, 5.0)
+				a.peck_t = 0.6
+		a.peck_t = maxf(0.0, a.peck_t - delta)
+	wander_t += delta
+	if wander_t >= WANDER_INTERVAL:
+		wander_t = 0.0
+		var player := get_tree().get_first_node_in_group("player") as Player
+		for a in animals:
+			if area_of(a) != world.area_id or randf() > 0.4:
+				continue
+			var dir: Vector2i = [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT].pick_random()
+			var target: Vector2i = a.cell + dir
+			if world.walkable(target) and animal_at(world.area_id, target) < 0 \
+					and not (player != null and player.cell == target):
+				a.cell = target
+	if visible_here:
+		queue_redraw()
+
+
+## Nomor bingkai animasi untuk hewan (ayam: diam/jalan/mematuk, sapi: diam/jalan A/B/makan).
+func _frame_of(a: Dictionary, sheet: String) -> int:
+	var t := Time.get_ticks_msec()
+	if sheet == "cow":
+		if a.moving:
+			return 1 + int(t / 260) % 2
+		return 3 if a.peck_t > 0.0 else 0
+	if a.moving:
+		return 1 if int(t / 180) % 2 == 0 else 0
+	return 2 if a.peck_t > 0.0 else 0
 
 
 func _draw() -> void:
@@ -122,20 +166,20 @@ func _draw() -> void:
 		if area_of(a) != world.area_id:
 			continue
 		var info: Dictionary = Data.animals[a.type]
-		var p := Vector2(a.cell) * T
-		var col := Color.html(info.color)
-		if a.type == "sapi":
-			draw_rect(Rect2(p + Vector2(3, 8), Vector2(26, 16)), col)
-			draw_rect(Rect2(p + Vector2(8, 11), Vector2(7, 6)), Color(0.25, 0.2, 0.18))
-			draw_rect(Rect2(p + Vector2(24, 6), Vector2(7, 9)), col.darkened(0.15))
-		else:
-			draw_circle(p + Vector2(16, 20), 9, col)
-			draw_circle(p + Vector2(22, 12), 5, col)
-			draw_rect(Rect2(p + Vector2(25, 11), Vector2(5, 3)), Color(0.95, 0.65, 0.15))
+		var sheet: String = info.get("sprite", "")
+		var p: Vector2 = a.pos
+		if not Sprites.draw_animal(self, sheet, p, a.right, _frame_of(a, sheet)):
+			var col := Color.html(info.color)
+			if a.type == "sapi":
+				draw_rect(Rect2(p + Vector2(3, 8), Vector2(26, 16)), col)
+			else:
+				draw_circle(p + Vector2(16, 20), 9, col)
+		var top := p.y + T - Sprites.animal_height(sheet) - 5.0
 		if a.product:
-			draw_circle(p + Vector2(16, 4), 4, Color(1, 0.9, 0.2))
+			draw_circle(Vector2(p.x + 16, top), 4, Color(1, 0.9, 0.2))
+			draw_arc(Vector2(p.x + 16, top), 4, 0, TAU, 12, Color(0.4, 0.3, 0.0), 1.0)
 		elif not a.fed:
-			draw_circle(p + Vector2(16, 4), 3, Color(0.85, 0.2, 0.2))
+			draw_circle(Vector2(p.x + 16, top), 3, Color(0.85, 0.2, 0.2))
 
 
 func save_data() -> Dictionary:
@@ -151,7 +195,7 @@ func load_data(d: Dictionary) -> void:
 	for e in d.get("animals", []):
 		if not Data.animals.has(str(e.type)):
 			continue
-		animals.append({"type": str(e.type), "name": str(e.name), "fed": bool(e.fed),
+		animals.append(_with_visuals({"type": str(e.type), "name": str(e.name), "fed": bool(e.fed),
 			"product": bool(e.product), "petted": bool(e.petted), "affection": int(e.affection),
-			"cell": Vector2i(int(e.x), int(e.y))})
+			"cell": Vector2i(int(e.x), int(e.y))}))
 	queue_redraw()

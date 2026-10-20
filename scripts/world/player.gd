@@ -185,6 +185,7 @@ func interact() -> void:
 	var who := npcs.npc_at(world.area_id, c)
 	if who != "":
 		Events.sfx.emit("blip")
+		npcs.face_towards(who, cell)
 		Events.open_dialog.emit(who)
 		return
 	if dog.cell == c:
@@ -245,6 +246,10 @@ func _draw() -> void:
 	if f.x >= 0 and f.y >= 0 and f.x < Layout.COLS and f.y < Layout.ROWS:
 		draw_rect(Rect2(Vector2(f - cell) * Layout.TILE, Vector2.ONE * Layout.TILE),
 			Color(1, 1, 1, 0.9), false, 2.0)
+	var moving := position.distance_to(Vector2(cell * Layout.TILE)) > 0.5
+	var frame := Sprites.walk_frame(moving) if fishing.state == Fishing.State.IDLE else 0
+	if Sprites.draw_char(self, "char_player", Vector2.ZERO, facing, frame):
+		return
 	draw_rect(Rect2(Vector2(6, 4), Vector2(20, 26)), Color(0.2, 0.35, 0.8))
 	draw_circle(Vector2(16, 8), 7, Color(0.95, 0.8, 0.65))
 	draw_circle(Vector2(16, 16) + Vector2(facing) * 4, 2, Color.BLACK)

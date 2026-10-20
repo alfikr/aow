@@ -380,6 +380,70 @@ func _ready() -> void:
 	player.try_move(Vector2i.UP)
 	check(world.area_id == "barn", "pintu ganda lumbung sapi (tile 4)")
 
+
+	# --- sprite karakter & hewan
+	check(Sprites.char_row(Vector2i.DOWN) == 0 and Sprites.char_row(Vector2i.LEFT) == 1
+		and Sprites.char_row(Vector2i.RIGHT) == 2 and Sprites.char_row(Vector2i.UP) == 3, "baris sprite sesuai arah hadap")
+	for sheet in ["char_player", "char_mira", "char_sari", "char_raka", "char_dodi", "char_lila"]:
+		var t := Sprites.tex(sheet)
+		check(t != null and t.get_size() == Vector2(96, 192), "sprite %s 3x4 sel 32x48" % sheet)
+	for sheet in Sprites.ANIMAL_CELLS:
+		var t := Sprites.tex(sheet)
+		check(t != null and t.get_height() == Sprites.ANIMAL_CELLS[sheet].y * 2, "sprite hewan %s dua baris" % sheet)
+	for nid in Data.npcs:
+		check(Sprites.tex("char_" + nid) != null, "NPC %s punya sprite" % nid)
+	check(Sprites.walk_frame(false) == 0 and Sprites.walk_frame(true) in [1, 2], "bingkai jalan 1/2 saat bergerak")
+
+	world.set_area("village")
+	player.cell = Vector2i(20, 9)
+	npcs.where["raka"] = {"area": "village", "cell": Vector2i(5, 9)}
+	npcs.vis.erase("raka")
+	npcs._animate(0.0)
+	npcs.where["raka"] = {"area": "village", "cell": Vector2i(6, 9)}
+	npcs._animate(0.1)
+	check(npcs.vis["raka"].facing == Vector2i.RIGHT and npcs.vis["raka"].moving, "NPC menghadap arah jalan & beranimasi")
+	for i in 10:
+		npcs._animate(0.1)
+	check(not npcs.vis["raka"].moving and npcs.vis["raka"].pos == Vector2(6 * 32, 9 * 32), "NPC berhenti di tile tujuan")
+	npcs.face_towards("raka", Vector2i(6, 8))
+	check(npcs.vis["raka"].facing == Vector2i.UP, "NPC menoleh ke pemain saat diajak bicara")
+	npcs.snap_all()
+
+	player.travel("coop", [14, 11])
+	ls.animals.clear()
+	ls.add_animal("ayam")
+	var hen: Dictionary = ls.animals[0]
+	ls.wander_t = -1000.0   # matikan gerak acak agar tes deterministik
+	hen.cell = hen.cell + Vector2i.RIGHT
+	ls._process(0.1)
+	check(hen.moving and hen.right, "ayam berjalan ke kanan menghadap kanan")
+	for i in 40:
+		ls._process(0.1)
+	check(not hen.moving and hen.pos == Vector2(hen.cell * 32), "ayam berhenti di tile tujuan")
+	hen.peck_t = 0.0
+	hen.idle_t = hen.next_peck
+	ls._process(0.1)
+	check(hen.peck_t > 0.0 and ls._frame_of(hen, "chicken") == 2, "ayam mematuk saat diam")
+	check(ls._frame_of({"moving": false, "peck_t": 0.3}, "cow") == 3, "sapi merumput (bingkai 3)")
+	ls.wander_t = 0.0
+
+	player.travel("farm", [4, 4])
+	player.cell = Vector2i(4, 4)
+	dog._process(0.1)
+	dog.snap = false
+	dog.cell = Vector2i(5, 4)
+	dog.face_right = false
+	dog.trail = [Vector2i(6, 4), Vector2i(7, 4)]
+	dog.last_player_cell = Vector2i(8, 4)
+	player.cell = Vector2i(9, 4)
+	dog._process(0.1)
+	check(dog.cell == Vector2i(6, 4) and dog.face_right, "anjing menghadap kanan saat bergerak ke kanan")
+	dog.trail = [Vector2i(3, 4), Vector2i(2, 4)]
+	dog.last_player_cell = Vector2i(1, 4)
+	player.cell = Vector2i(0, 4)
+	dog._process(0.1)
+	check(dog.cell == Vector2i(3, 4) and not dog.face_right, "anjing menghadap kiri saat bergerak ke kiri")
+
 	# dialog lewat menu
 	Inventory.add("crop:lobak")
 	menu.open_dialog("raka")
