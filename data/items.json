@@ -19,5 +19,13 @@
 		"name": "Bulu Biru",
 		"sell": 0,
 		"buy": 3000
+	},
+	"forage:jamur": {
+		"name": "Jamur Hutan",
+		"sell": 120
+	},
+	"forage:herba": {
+		"name": "Herba Langka",
+		"sell": 90
 	}
 }

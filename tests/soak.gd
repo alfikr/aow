@@ -20,7 +20,7 @@ func _ready() -> void:
 	var npcs: Npcs = main.get_node("Npcs")
 	var ls: Livestock = main.get_node("Livestock")
 	var menu: Control = main.get_node("UI/Menu")
-	var areas := ["farm", "village", "shop", "coop", "barn", "home", "hall", "inn", "lane", "house_raka", "house_lila", "house_dodi", "beach"]
+	var areas := ["farm", "village", "shop", "coop", "barn", "home", "hall", "inn", "lane", "house_raka", "house_lila", "house_dodi", "beach", "grove"]
 	var dirs := [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]
 	Inventory.gold = 20000
 	var days_done := 0

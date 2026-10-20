@@ -23,6 +23,9 @@
 6. [x] Lanjutan: memancing (kolam & pantai, musim/kelangkaan), tambang 10 lantai (bijih untuk upgrade alat), memasak (6 resep, makan pulihkan stamina), TV ramalan cuaca, pernikahan + anak, ending setelah 2 tahun.
 7. [x] Polesan: audio sintetis (efek + 3 musik, bus Music/SFX), pengaturan, menu judul/jeda/bantuan, renderer Compatibility, preset export Linux + skrip build, validator data, uji soak.
 
+## Tambahan
+Batu kecil/besar di ladang dan tambang; Hutan Rahasia (peta tersembunyi: batu raksasa -> Cangkul Tembaga, patung Dewi Panen, peti, hasil hutan).
+
 ## Status
 Semua tahap pada peta jalan selesai. Ide lanjutan: kuda, hewan sakit, pohon buah, kota kedua, festival interaktif, lebih banyak NPC/event, seni piksel sungguhan menggantikan placeholder.
 

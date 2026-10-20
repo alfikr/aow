@@ -22,6 +22,7 @@ func _ready() -> void:
 	await get_tree().process_frame
 	var player: Player = main.get_node("Player")
 	var farm: Farm = main.get_node("Farm")
+	farm.rocks.clear()   # tes lain memakai petak ladang bebas; batu diuji terpisah di bawah
 	Clock.paused = true
 
 	player.cell = Vector2i(12, 12)
@@ -571,7 +572,7 @@ func _ready() -> void:
 	check(world.features.filter(func(f): return f.kind == "rock").size() == n1, "tata letak lantai konsisten dalam sehari")
 	var target: Dictionary = {}
 	for f in rocks:
-		if f.raw.get("ore", "") != "":
+		if f.raw.get("ore", "") != "" and not f.raw.get("big", false):
 			target = f
 			break
 	check(not target.is_empty(), "ada batu bijih di lantai 1")
@@ -665,6 +666,175 @@ func _ready() -> void:
 	check(menu.body.contains("Skor") and menu.body.contains("Mira"), "ending merangkum progres")
 	menu.close()
 
+
+
+	# --- batu kecil & besar di ladang
+	Progress.flags.erase("secret_open")
+	farm.tiles.clear()
+	farm.scatter_rocks(4242)
+	var rock_kinds := {"small": 0, "big": 0, "sealed": 0}
+	for r in farm.rocks:
+		rock_kinds[r.kind] += 1
+	check(rock_kinds.small == 12 and rock_kinds.big == 3 and rock_kinds.sealed == 1, "taburan batu: 12 kecil, 3 besar, 1 raksasa")
+	var overlap := false
+	var seen_cells := {}
+	for r in farm.rocks:
+		for x in r.size:
+			for y in r.size:
+				var cc: Vector2i = r.cell + Vector2i(x, y)
+				if seen_cells.has(cc):
+					overlap = true
+				seen_cells[cc] = true
+				if r.kind != "sealed" and (not Layout.FIELD.has_point(cc) or Farm.STARTER.has_point(cc)):
+					overlap = true
+	check(not overlap, "batu tidak bertumpuk, di dalam ladang, dan petak awal bersih")
+
+	farm.rocks.clear()
+	farm.rocks.append({"cell": Vector2i(11, 5), "size": 1, "kind": "small", "hp": 1})
+	farm.rocks.append({"cell": Vector2i(14, 5), "size": 2, "kind": "big", "hp": 4})
+	check(farm.blocks(Vector2i(11, 5)) and farm.blocks(Vector2i(15, 6)) and not farm.blocks(Vector2i(16, 5)), "batu menghalangi (besar = 2x2)")
+	check(not farm.till(Vector2i(11, 5)), "tidak bisa mencangkul di atas batu")
+	world.set_area("farm")
+	player.cell = Vector2i(11, 6)
+	player.facing = Vector2i.UP
+	player.tool = Player.Tool.HOE
+	player.stamina = 50.0
+	var stone0 := Inventory.count("stone")
+	player.use_tool()
+	check(farm.rock_index_at(Vector2i(11, 5)) < 0 and Inventory.count("stone") > stone0 and player.stamina == 47.0, "batu kecil hancur sekali pukul + dapat batu")
+	player.cell = Vector2i(14, 7)
+	player.facing = Vector2i.UP
+	Inventory.tool_levels["hoe"] = 0
+	for i in 3:
+		player.use_tool()
+	check(farm.rock_index_at(Vector2i(14, 6)) >= 0, "batu besar bertahan setelah 3 pukulan (cangkul dasar)")
+	player.use_tool()
+	check(farm.rock_index_at(Vector2i(14, 6)) < 0, "batu besar hancur pada pukulan ke-4")
+	farm.rocks.append({"cell": Vector2i(14, 5), "size": 2, "kind": "big", "hp": 4})
+	Inventory.tool_levels["hoe"] = 1
+	player.use_tool()
+	player.use_tool()
+	check(farm.rock_index_at(Vector2i(14, 6)) < 0, "cangkul tembaga: batu besar hancur dalam 2 pukulan")
+	Inventory.tool_levels["hoe"] = 0
+	check(farm.spawn_daily_rock(true) and farm.rocks.size() == 1, "batu kecil baru muncul tiap hari")
+	farm.rocks.clear()
+
+	# --- peta tersembunyi: Hutan Rahasia
+	Progress.flags.erase("secret_open")
+	farm.scatter_rocks(4242)
+	var sealed_i := -1
+	for i in farm.rocks.size():
+		if farm.rocks[i].kind == "sealed":
+			sealed_i = i
+	check(sealed_i >= 0 and farm.rocks[sealed_i].cell == Vector2i(27, 5), "batu raksasa menutup jalan rahasia di timur kebun")
+	check(world.exit_at(Vector2i(29, 5)).is_empty(), "pintu hutan rahasia belum aktif")
+	player.cell = Vector2i(27, 7)
+	player.facing = Vector2i.UP
+	player.stamina = 100.0
+	Inventory.tool_levels["hoe"] = 0
+	player.use_tool()
+	check(farm.rocks[sealed_i].hp == 4 and player.stamina == 100.0, "Cangkul Dasar tak bisa memecahkan batu raksasa (tanpa stamina)")
+	Inventory.tool_levels["hoe"] = 1
+	player.use_tool()
+	check(farm.rocks[sealed_i].hp == 2, "Cangkul Tembaga meretakkan batu raksasa")
+	player.use_tool()
+	check(Progress.flag("secret_open") and farm.rock_index_at(Vector2i(27, 5)) < 0, "batu raksasa runtuh -> jalan rahasia terbuka")
+	check(not world.exit_at(Vector2i(29, 5)).is_empty() and world.walkable(Vector2i(28, 5)), "pintu hutan rahasia aktif & terjangkau")
+	Inventory.tool_levels["hoe"] = 0
+	var recipes_before := Progress.recipes.size()
+	player.cell = Vector2i(28, 5)
+	player.try_move(Vector2i.RIGHT)
+	check(world.area_id == "grove" and player.cell == Vector2i(1, 8), "masuk Hutan Rahasia")
+	check(Progress.flag("grove_visited") and Progress.knows_recipe("sup_jamur") and Progress.recipes.size() >= recipes_before, "resep hutan dipelajari saat pertama masuk")
+	check(world.walkable(Vector2i(5, 8)) and not world.walkable(Vector2i(15, 8)), "jalan setapak & kolam di hutan")
+
+	# jamur & herba (tumbuh lagi tiap hari)
+	var jamur: Dictionary = {}
+	for f in world.features:
+		if f.kind == "forage" and f.raw.forage == "forage:jamur":
+			jamur = f
+	check(not jamur.is_empty(), "ada jamur di hutan")
+	player.cell = jamur.rect.position + Vector2i.DOWN
+	player.facing = Vector2i.UP
+	var j0 := Inventory.count("forage:jamur")
+	player.interact()
+	check(Inventory.count("forage:jamur") == j0 + 1, "memetik jamur")
+	player.interact()
+	check(Inventory.count("forage:jamur") == j0 + 1 and got[0].contains("Sudah dipetik"), "jamur tidak bisa dipetik dua kali")
+	Clock.end_day(false)
+	check(Progress.forage_taken.is_empty(), "jamur tumbuh lagi besok")
+	player.travel("grove", [1, 8])
+
+	# peti harta
+	var gold_c := Inventory.gold
+	player.cell = Vector2i(23, 4)
+	player.facing = Vector2i.RIGHT
+	player.interact()
+	check(Inventory.gold == gold_c + 300 and Progress.flag("grove_chest"), "peti harta memberi 300G")
+	player.interact()
+	check(Inventory.gold == gold_c + 300 and got[0].contains("kosong"), "peti hanya bisa dibuka sekali")
+
+	# patung Dewi Panen
+	player.cell = Vector2i(15, 5)
+	player.facing = Vector2i.DOWN
+	Inventory.add("crop:lobak", 2)
+	player.interact()
+	check(menu.mode == menu.Mode.SHRINE, "patung membuka menu persembahan")
+	var offer_e: Dictionary = {}
+	for e in menu.entries:
+		if e.get("kind", "") == "offer" and e.arg == "crop:lobak":
+			offer_e = e
+	menu._activate(offer_e)
+	check(Progress.blessing and menu.body.contains("diberkahi"), "persembahan memberi berkah")
+	menu._activate(offer_e)
+	check(menu.body.contains("sudah menerima"), "satu persembahan per hari")
+	menu.close()
+	world.set_area("farm")
+	farm.tiles.clear()
+	farm.till(Vector2i(10, 11))
+	farm.plant(Vector2i(10, 11), "lobak")
+	Progress.blessing = true
+	farm._on_day_started(false)
+	check(farm.tiles[Vector2i(10, 11)].age == 1 and farm.tiles[Vector2i(10, 11)].watered and not Progress.blessing, "berkah: tanaman disiram & tumbuh +1")
+	Progress.offerings = 9
+	Progress.blessing = false
+	Inventory.add("crop:lobak")
+	var emas0 := Inventory.count("ore:emas")
+	Progress.offer("crop:lobak")
+	check(Progress.offerings == 10 and Inventory.count("ore:emas") == emas0 + 3, "persembahan ke-10 memberi 3 Bijih Emas")
+
+	SaveSystem.save_game()
+	Progress.flags.clear()
+	farm.rocks.clear()
+	SaveSystem.load_game()
+	check(Progress.flag("secret_open") and Progress.flag("grove_chest") and farm.rocks.size() > 0, "bendera cerita & batu tersimpan")
+	check(farm.rocks.all(func(r): return r.kind != "sealed"), "batu raksasa tidak muncul lagi setelah dipecahkan")
+
+	# --- batu besar di tambang
+	Inventory.tool_levels["hoe"] = 0
+	mine.floor_n = 1
+	mine.damage.clear()
+	mine.broken.clear()
+	player.travel("village", [20, 2])
+	player.cell = Vector2i(20, 2)
+	player.try_move(Vector2i.UP)
+	var bigs: Array = world.features.filter(func(f): return f.kind == "rock" and f.raw.get("big", false))
+	check(bigs.size() >= 1, "tambang punya batu besar (%d)" % bigs.size())
+	var bf: Dictionary = bigs[0]
+	player.stamina = 100.0
+	player.cell = bf.rect.position + Vector2i(0, 2)
+	player.facing = Vector2i.UP
+	player.use_tool()
+	player.use_tool()
+	check(world.features.has(bf) and mine.damage.size() == 1, "batu besar tambang bertahan dua pukulan (dasar)")
+	var ore_b: String = bf.raw.get("ore", "")
+	var have_b := Inventory.count("ore:" + ore_b) if ore_b != "" else Inventory.count("stone")
+	player.use_tool()
+	var after_b := Inventory.count("ore:" + ore_b) if ore_b != "" else Inventory.count("stone")
+	check(not world.features.has(bf) and after_b >= have_b + (2 if ore_b != "" else 4), "batu besar tambang hancur pukulan ke-3 + banyak hasil")
+	mine.broken.clear()
+	mine.damage.clear()
+	world.set_area("farm")
 
 	# --- tahap 7: audio, pengaturan, menu jeda, judul
 	for sfx_name in Audio.SFX_NAMES:

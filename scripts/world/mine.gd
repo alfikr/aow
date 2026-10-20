@@ -10,12 +10,17 @@ const SPAWN := Vector2i(14, 12)
 var save_key := "mine"
 var floor_n := 1
 var broken := {}   # "lantai:x,y" -> true (reset tiap hari)
+var damage := {}   # batu besar: "lantai:x,y" -> kerusakan terkumpul (reset tiap hari)
+const BIG_HP := 3
+const BIG_DAMAGE := [1, 2, 3]   # per level cangkul
 
 
 func _ready() -> void:
 	add_to_group("saveable")
 	add_to_group("mine")
-	Events.day_started.connect(func(_p): broken.clear())
+	Events.day_started.connect(func(_p):
+		broken.clear()
+		damage.clear())
 
 
 func _ore_for_floor(rng: RandomNumberGenerator) -> String:
@@ -38,6 +43,26 @@ func generate() -> Dictionary:
 	var shade := Color(0.2, 0.2, 0.24).darkened(0.05 * (floor_n - 1))
 	var feats: Array = [{"kind": "floor", "rect": [2, 2, 26, 12], "color": shade.to_html(false), "tile": "floor_cave"}]
 	var stairs := Vector2i(rng.randi_range(4, 25), rng.randi_range(3, 6))
+	# batu besar 2x2 (tata letak dari seed terpisah agar konsisten sepanjang hari)
+	var taken := {}
+	var rng_b := RandomNumberGenerator.new()
+	rng_b.seed = hash([Clock.total_days(), floor_n, 77])
+	for i in 3:
+		var bx := rng_b.randi_range(4, 24)
+		var by := rng_b.randi_range(3, 10)
+		var ore_b := _ore_for_floor(rng_b) if rng_b.randf() < 0.7 else ""
+		var cells := [Vector2i(bx, by), Vector2i(bx + 1, by), Vector2i(bx, by + 1), Vector2i(bx + 1, by + 1)]
+		var ok := true
+		for cc in cells:
+			if cc == stairs or taken.has(cc) or (cc.y >= 11 and cc.x >= 12 and cc.x <= 17):
+				ok = false
+		if not ok:
+			continue
+		for cc in cells:
+			taken[cc] = true
+		if not broken.has(_key(Vector2i(bx, by))):
+			feats.append({"kind": "rock", "rect": [bx, by, 2, 2], "color": "7d7d85", "ore": ore_b, "big": true,
+				"sprite": "boulder_" + ore_b if ore_b != "" else "boulder"})
 	for x in range(3, 27):
 		for y in range(3, 13):
 			var c := Vector2i(x, y)
@@ -45,7 +70,7 @@ func generate() -> Dictionary:
 			var ore := ""
 			if rng.randf() < 0.3:
 				ore = _ore_for_floor(rng)
-			if c == stairs or (y >= 11 and x >= 12 and x <= 17):
+			if c == stairs or (y >= 11 and x >= 12 and x <= 17) or taken.has(c):
 				continue
 			if roll < 0.2 and not broken.has(_key(c)):
 				feats.append({"kind": "rock", "rect": [x, y, 1, 1], "color": "7d7d85", "ore": ore,
@@ -63,6 +88,28 @@ func generate() -> Dictionary:
 			"to": "mine", "spawn": [SPAWN.x, SPAWN.y], "floor": floor_n - 1})
 	return {"name": "Tambang lantai %d" % floor_n, "indoor": true, "ground": "1c1c22",
 		"walkable": [2, 2, 26, 12], "features": feats}
+
+
+## Pukul batu: batu kecil langsung pecah, batu besar perlu beberapa pukulan (lebih sedikit dengan cangkul lebih kuat).
+func strike(f: Dictionary, level: int) -> Dictionary:
+	if not f.raw.get("big", false):
+		return {"done": true, "msg": break_rock(f)}
+	var c: Vector2i = f.rect.position
+	var k := _key(c)
+	damage[k] = int(damage.get(k, 0)) + int(BIG_DAMAGE[clampi(level, 0, 2)])
+	if int(damage[k]) < BIG_HP:
+		return {"done": false, "msg": "Batu besar retak... (%d/%d)" % [damage[k], BIG_HP]}
+	damage.erase(k)
+	broken[k] = true
+	Progress.best("mine_floor", floor_n)
+	var ore: String = f.raw.get("ore", "")
+	if ore != "":
+		var n := randi_range(2, 4)
+		Inventory.add("ore:" + ore, n)
+		return {"done": true, "msg": "Batu besar hancur! Mendapat %d %s." % [n, Data.item_name("ore:" + ore)]}
+	var stones := randi_range(4, 6)
+	Inventory.add("stone", stones)
+	return {"done": true, "msg": "Batu besar hancur! Mendapat %d Batu." % stones}
 
 
 ## Pecahkan satu batu; mengembalikan pesan hasilnya.

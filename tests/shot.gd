@@ -20,6 +20,7 @@ func _ready() -> void:
 	var ls: Livestock = main.get_node("Livestock")
 	var menu: Control = main.get_node("UI/Menu")
 
+	farm.rocks.clear()   # petak ladang bebas untuk menampilkan semua tanaman
 	# peternakan dengan ladang: semua tanaman, tiap tahap pertumbuhan
 	var crops := ["lobak", "kentang", "tomat", "jagung", "labu"]
 	for row in crops.size():
@@ -99,6 +100,40 @@ func _ready() -> void:
 
 	player.travel("mine", [14, 12])
 	await _shot(out, "08_mine")
+
+	# ladang berbatu & jalan rahasia
+	farm.tiles.clear()
+	Progress.flags.erase("secret_open")
+	farm.scatter_rocks(4242)
+	player.travel("farm", [12, 14])
+	await _shot(out, "01b_farm_rocks")
+	Progress.flags["secret_open"] = true
+	farm.rocks = farm.rocks.filter(func(r): return r.kind != "sealed")
+	Events.world_changed.emit()
+	await _shot(out, "01c_secret_open")
+	Progress.flags.erase("secret_open")
+	farm.scatter_rocks(4242)
+
+	# hutan rahasia
+	Clock.minutes = 10.0 * 60
+	Progress.flags["secret_open"] = true
+	player.travel("grove", [1, 8])
+	for i in 30:
+		await get_tree().process_frame
+	await _shot(out, "07e_grove")
+	player.cell = Vector2i(15, 5)
+	player.position = Vector2(player.cell * Layout.TILE)
+	player.facing = Vector2i.DOWN
+	Clock.minutes = 20.0 * 60 + 30
+	for i in 20:
+		await get_tree().process_frame
+	await _shot(out, "07f_grove_night")
+	Clock.minutes = 10.0 * 60
+	Inventory.add("crop:lobak", 2)
+	menu.open(menu.Mode.SHRINE)
+	await _shot(out, "07g_shrine")
+	menu.close()
+	Progress.flags.erase("secret_open")
 
 	player.travel("lane", [14, 1])
 	main.get_node("Npcs").snap_all()

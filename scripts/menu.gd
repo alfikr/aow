@@ -3,11 +3,11 @@ extends Control
 
 signal closed
 
-enum Mode { NONE, SHOP, INVENTORY, DIALOG, COOK, ENDING, PAUSE, SETTINGS, HELP }
+enum Mode { NONE, SHOP, INVENTORY, DIALOG, COOK, ENDING, PAUSE, SETTINGS, HELP, SHRINE }
 
 const PANEL := Rect2(120, 40, 720, 440)
 const BODY_H := 96.0
-const HELP_TEXT := "WASD / panah: jalan\nSpasi: pakai alat di tile depan (atau tarik pancing)\n1 cangkul   2 penyiram   3 benih   4 pancing   Q ganti jenis benih\nE: bicara, panen, ambil produk, buka pintu benda, tidur di kasur, masak di dapur\nI: inventori (Enter pada masakan untuk makan)   Esc: menu jeda   F11: layar penuh\n\nSiram tanaman tiap hari, panen, lalu masukkan ke kotak kirim (E). Uang diterima saat tidur.\nToko ada di desa (timur peternakan), buka 09:00-18:00. Tambang di utara desa, pantai di timur, rumah warga di selatan (Permukiman)."
+const HELP_TEXT := "WASD / panah: jalan\nSpasi: pakai alat di tile depan (atau tarik pancing)\n1 cangkul   2 penyiram   3 benih   4 pancing   Q ganti jenis benih\nE: bicara, panen, ambil produk, buka pintu benda, tidur di kasur, masak di dapur\nI: inventori (Enter pada masakan untuk makan)   Esc: menu jeda   F11: layar penuh\n\nSiram tanaman tiap hari, panen, lalu masukkan ke kotak kirim (E). Uang diterima saat tidur.\nToko ada di desa (timur peternakan), buka 09:00-18:00. Tambang di utara desa, pantai di timur, rumah warga di selatan (Permukiman). Batu di ladang dipecahkan dengan cangkul. Ada rahasia di timur kebun..."
 
 var mode := Mode.NONE
 var return_to := Mode.NONE   # mode tujuan saat Esc dari Pengaturan/Bantuan
@@ -25,6 +25,7 @@ func _ready() -> void:
 	Events.open_shop.connect(func(): open(Mode.SHOP))
 	Events.open_dialog.connect(open_dialog)
 	Events.open_cook.connect(func(): open(Mode.COOK))
+	Events.open_shrine.connect(func(): open(Mode.SHRINE))
 	Events.show_ending.connect(func(): open(Mode.ENDING))
 
 
@@ -94,6 +95,8 @@ func _rebuild() -> void:
 		_build_inventory()
 	elif mode == Mode.COOK:
 		_build_cook()
+	elif mode == Mode.SHRINE:
+		_build_shrine()
 	elif mode == Mode.PAUSE:
 		entries = [
 			{"label": "Lanjut bermain", "kind": "resume"},
@@ -183,6 +186,16 @@ func _build_inventory() -> void:
 		entries.append({"label": "Hari ini: %s (harga jual +%d%%)" % [fest.name, roundi(float(fest.sell_bonus) * 100)]})
 
 
+func _build_shrine() -> void:
+	if body == "":
+		body = "Patung Dewi Panen memancarkan cahaya hangat. Persembahkan hasil bumi agar tanamanmu diberkahi esok pagi.\n(Persembahan sejauh ini: %d)" % Progress.offerings
+	for id in Inventory.items:
+		var s := str(id)
+		if (s.begins_with("crop:") or s.begins_with("forage:")) and Inventory.count(s) > 0:
+			entries.append({"label": "Persembahkan %s (x%d)" % [Data.item_name(s), Inventory.count(s)], "kind": "offer", "arg": s})
+	entries.append({"label": "Selesai", "kind": "close"})
+
+
 func _bar(v: int) -> String:
 	return "[" + "#".repeat(v) + "-".repeat(10 - v) + "] %d/10" % v
 
@@ -260,7 +273,7 @@ func _confirm() -> void:
 		page += 1
 		body = pages[page]
 		_rebuild()
-	elif entries.size() > 0 and mode in [Mode.SHOP, Mode.DIALOG, Mode.COOK, Mode.INVENTORY, Mode.PAUSE, Mode.SETTINGS]:
+	elif entries.size() > 0 and mode in [Mode.SHOP, Mode.DIALOG, Mode.COOK, Mode.INVENTORY, Mode.PAUSE, Mode.SETTINGS, Mode.SHRINE]:
 		_activate(entries[cursor])
 
 
@@ -330,6 +343,9 @@ func _activate(e: Dictionary) -> void:
 			pages = npcs.talk(npc_id)
 			page = 0
 			body = pages[0]
+		"offer":
+			body = Progress.offer(e.arg)
+			note = ""
 		"gift":
 			var npcs := get_tree().get_first_node_in_group("npcs") as Npcs
 			pages = []
@@ -380,6 +396,7 @@ func _draw() -> void:
 		Mode.INVENTORY: title = "Inventori"
 		Mode.ENDING: title = "Dua Tahun Berlalu"
 		Mode.COOK: title = "Dapur"
+		Mode.SHRINE: title = "Dewi Panen"
 		Mode.PAUSE: title = "Jeda"
 		Mode.SETTINGS: title = "Pengaturan"
 		Mode.HELP: title = "Bantuan"
@@ -395,11 +412,11 @@ func _draw() -> void:
 		var body_size := 17 if mode != Mode.ENDING else 16
 		draw_multiline_string(font, Vector2(PANEL.position.x + 24, y), body, HORIZONTAL_ALIGNMENT_LEFT,
 			PANEL.size.x - 48, body_size, -1, Color.WHITE)
-		y += BODY_H if mode == Mode.DIALOG else (40.0 if mode == Mode.COOK else 0.0)
+		y += BODY_H if mode in [Mode.DIALOG, Mode.SHRINE] else (40.0 if mode == Mode.COOK else 0.0)
 		if mode == Mode.DIALOG and page < pages.size() - 1:
 			draw_string(font, Vector2(PANEL.position.x + 24, y), "(Enter untuk lanjut)", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color(0.7, 0.8, 1))
 	if mode != Mode.ENDING:
-		var selectable := mode in [Mode.SHOP, Mode.DIALOG, Mode.COOK, Mode.INVENTORY, Mode.PAUSE, Mode.SETTINGS]
+		var selectable := mode in [Mode.SHOP, Mode.DIALOG, Mode.COOK, Mode.INVENTORY, Mode.PAUSE, Mode.SETTINGS, Mode.SHRINE]
 		for i in entries.size():
 			var selected := selectable and i == cursor
 			if selected:
@@ -412,6 +429,7 @@ func _draw() -> void:
 	match mode:
 		Mode.INVENTORY: hint = "W/S pilih, Enter makan masakan, Esc / I tutup"
 		Mode.COOK: hint = "W/S pilih, Enter masak, Esc tutup"
+		Mode.SHRINE: hint = "W/S pilih, Enter persembahkan, Esc tutup"
 		Mode.PAUSE: hint = "W/S pilih, Enter pilih, Esc lanjut"
 		Mode.SETTINGS: hint = "W/S pilih, A/D atur volume, Enter ubah, Esc kembali"
 		Mode.HELP: hint = "Enter / Esc kembali"

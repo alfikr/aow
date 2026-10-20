@@ -47,7 +47,9 @@ Tampilan dunia berubah tiap musim: semi (bunga, kelopak beterbangan), panas (bun
 - **Desa:** toko (09:00-18:00) menjual benih, pakan, hewan, upgrade alat, dan Bulu Biru. Di deretan utara ada toko, penginapan, dan balai desa; tambang di utara, pantai di timur, dan **Permukiman** di selatan (rumah Raka, Nenek Lila, dan Pak Dodi, masing-masing berbeda).
 - **Hewan:** ayam dan sapi (beri pakan tiap hari, ambil telur/susu), plus anjing yang mengikutimu.
 - **Warga:** 5 NPC dengan jadwal harian, dialog musiman, hadiah (tiap orang punya selera dan ulang tahun), 10 hati, event hati.
+- **Batu:** ladang berisi batu kecil (sekali pukul) dan batu besar 2×2 (4 pukulan dengan Cangkul Dasar, 2 dengan Tembaga, 1 dengan Perak) yang menghalangi pencangkulan; batu kecil baru muncul dari waktu ke waktu. Di tambang ada batu kecil dan batu besar berbijih.
 - **Tambang:** 10 lantai; pecahkan batu dengan cangkul. Bijih tembaga/perak dipakai untuk upgrade alat.
+- **Hutan Rahasia:** peta tersembunyi di balik batu raksasa bersulur di tepi timur ladang (butuh Cangkul Tembaga). Isinya patung Dewi Panen (persembahan hasil panen memberi berkah esok pagi), peti harta, dan jamur serta herba langka yang tumbuh lagi tiap hari. Nenek Lila memberi petunjuknya.
 - **Memancing:** kolam di peternakan dan laut di pantai; ikan bergantung pada musim dan tempat.
 - **Memasak:** dapur di rumah. Resep baru didapat dari event hati. TV di rumah menampilkan ramalan cuaca besok.
 - **Pernikahan:** beli Bulu Biru (3000G), beri ke Mira atau Sari dengan 8 hati. Pasangan membantu menyiram, dan kelak ada anak.

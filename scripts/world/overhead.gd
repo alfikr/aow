@@ -17,7 +17,8 @@ func _draw() -> void:
 	for f in world.draw_list:
 		if not f.raw.get("overhead", false):
 			continue
-		var tex := Sprites.tex_season(str(f.raw.get("sprite", "")))
+		var sname := str(f.raw.get("sprite", ""))
+		var tex := Sprites.tex(sname) if f.raw.get("season_fixed", false) else Sprites.tex_season(sname)
 		if tex == null:
 			continue
 		var d := world.sprite_dest(f, tex)

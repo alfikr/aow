@@ -131,8 +131,10 @@ func use_tool() -> void:
 	if feat.get("kind", "") == "rock" and tool != Tool.FISH:
 		if spend_stamina(Mine.STAMINA_COST * Inventory.stamina_mult("hoe")):
 			Events.sfx.emit("mine")
-			say(mine.break_rock(feat))
-			world.remove_feature(feat)
+			var res := mine.strike(feat, Inventory.tool_level("hoe"))
+			say(res.msg)
+			if res.done:
+				world.remove_feature(feat)
 		return
 	if tool == Tool.WATER and world.feature_at(c).get("kind", "") == "water":
 		refill()
@@ -146,6 +148,16 @@ func use_tool() -> void:
 				fishing.cast(place, c)
 		Tool.HOE:
 			if world.area_id != "farm":
+				return
+			if farm.rock_index_at(c) >= 0:
+				if farm.strike_damage(c, Inventory.tool_level("hoe")) == 0:
+					say(farm.strike(c, 0).msg)      # tanpa stamina: terlalu lemah
+				elif spend_stamina(Mine.STAMINA_COST * Inventory.stamina_mult("hoe")):
+					Events.sfx.emit("mine")
+					var res := farm.strike(c, Inventory.tool_level("hoe"))
+					say(res.msg)
+					if res.done:
+						Events.world_changed.emit()
 				return
 			if farm.has_tile(c):
 				if farm.crop_at(c) == "" and spend_stamina(2 * Inventory.stamina_mult("hoe")):
@@ -205,11 +217,43 @@ func interact() -> void:
 			refill()
 		"kitchen":
 			Events.open_cook.emit()
+		"shrine":
+			Events.sfx.emit("blip")
+			Events.open_shrine.emit()
+		"chest":
+			open_chest()
+		"forage":
+			forage(world.feature_at(c))
 		"tv":
 			say("TV: Ramalan cuaca besok - %s." % Clock.WEATHER_NAMES[Clock.forecast])
 		_:
 			if world.area_id == "farm" and farm.crop_at(c) != "":
 				harvest(c)
+
+
+func open_chest() -> void:
+	if Progress.flag("grove_chest"):
+		say("Peti ini sudah kosong.")
+		return
+	Progress.set_flag("grove_chest")
+	Inventory.gold += 300
+	Inventory.add("ore:emas", 2)
+	Events.sfx.emit("coin")
+	say("Peti harta! Kamu mendapat 300G dan 2 Bijih Emas.")
+
+
+func forage(f: Dictionary) -> void:
+	var key := "%d,%d" % [f.rect.position.x, f.rect.position.y]
+	if Progress.forage_taken.has(key):
+		say("Sudah dipetik hari ini. Besok tumbuh lagi.")
+		return
+	var item: String = f.raw.forage
+	Inventory.add(item)
+	Progress.forage_taken[key] = true
+	Progress.bump("forage")
+	Events.sfx.emit("harvest")
+	Events.world_changed.emit()
+	say("Memetik %s." % Data.item_name(item))
 
 
 func refill() -> void:

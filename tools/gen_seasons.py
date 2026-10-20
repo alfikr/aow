@@ -144,10 +144,25 @@ def make_snow_pile():
     cv.save("snow_pile")
 
 
+def make_forest_ground():
+    """Rumput hutan: lebih gelap dan kebiruan dari rumput biasa."""
+    img = Image.open(os.path.join(OUT, "grass.png")).convert("RGBA")
+    px = img.load()
+    for y in range(img.height):
+        for x in range(img.width):
+            r, g, b, a = px[x, y]
+            h, s_, v = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
+            if is_green(h, s_):
+                nr, ng, nb = colorsys.hsv_to_rgb(min(0.5, h + 0.035), min(1.0, s_ * 1.05), v * 0.74)
+                px[x, y] = (int(nr * 255), int(ng * 255), int(nb * 255), a)
+    img.save(os.path.join(OUT, "grass_forest.png"))
+
+
 if __name__ == "__main__":
     for n in SEASONAL:
         for season in ("summer", "autumn", "winter"):
             recolor(n, season)
+    make_forest_ground()
     make_sunflowers()
     make_leaf_pile()
     make_snowman()

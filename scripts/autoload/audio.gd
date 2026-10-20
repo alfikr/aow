@@ -117,6 +117,9 @@ func choose_track() -> String:
 	var world := get_tree().get_first_node_in_group("world") as World
 	if world == null:
 		return "music_day"
+	var forced := str(world.area.get("music", ""))
+	if forced != "":
+		return forced
 	if world.is_indoor():
 		return "music_indoor"
 	return "music_night" if Clock.minutes >= 18 * 60 else "music_day"

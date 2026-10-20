@@ -10,11 +10,16 @@ var child := false
 var ending_seen := false
 var stats := {}
 var recipes: Array = []
+var flags := {}            # penanda cerita: secret_open, grove_visited, grove_chest, ...
+var forage_taken := {}     # "x,y" -> true (tumbuh lagi tiap hari)
+var blessing := false      # berkah Dewi Panen untuk besok pagi
+var offerings := 0
 
 
 func _ready() -> void:
 	reset()
 	Events.day_started.connect(_on_day_started)
+	Events.area_changed.connect(_on_area_changed)
 
 
 func reset() -> void:
@@ -25,6 +30,43 @@ func reset() -> void:
 	ending_seen = false
 	stats = {"fish": 0, "mine_floor": 0, "dishes": 0, "harvests": 0, "gifts": 0}
 	recipes = ["sup_lobak", "telur_goreng"]
+	flags = {}
+	forage_taken = {}
+	blessing = false
+	offerings = 0
+
+
+func flag(name: String) -> bool:
+	return bool(flags.get(name, false))
+
+
+func set_flag(name: String) -> void:
+	flags[name] = true
+	Events.world_changed.emit()
+
+
+func _on_area_changed(id: String) -> void:
+	if id == "grove" and not flag("grove_visited"):
+		flags["grove_visited"] = true
+		unlock_recipe("sup_jamur")
+		unlock_recipe("teh_herba")
+		Events.story.emit("Kamu menemukan Hutan Rahasia! Di sini Dewi Panen bersemayam. (Resep Sup Jamur dan Teh Herba dipelajari.)")
+
+
+## Persembahan ke patung Dewi Panen: berkah untuk tanaman esok pagi.
+func offer(item: String) -> String:
+	if blessing:
+		return "Dewi Panen sudah menerima persembahanmu hari ini."
+	if not Inventory.remove(item):
+		return "Kamu tidak punya itu."
+	blessing = true
+	offerings += 1
+	var msg := "Dewi Panen menerima %s dengan senyum. Besok tanamanmu akan diberkahi." % Data.item_name(item)
+	if offerings == 10 and not flag("offer_reward"):
+		flags["offer_reward"] = true
+		Inventory.add("ore:emas", 3)
+		msg += " Cahaya hangat menjatuhkan 3 Bijih Emas untukmu!"
+	return msg
 
 
 func bump(stat: String, n := 1) -> void:
@@ -45,6 +87,7 @@ func unlock_recipe(id: String) -> void:
 
 
 func _on_day_started(_passed_out: bool) -> void:
+	forage_taken.clear()
 	if fiance != "":
 		spouse = fiance
 		fiance = ""
@@ -87,7 +130,8 @@ func ending_text(player_stamina_note := "") -> String:
 
 func save_data() -> Dictionary:
 	return {"spouse": spouse, "fiance": fiance, "wedding_day": wedding_day, "child": child,
-		"ending_seen": ending_seen, "stats": stats, "recipes": recipes}
+		"ending_seen": ending_seen, "stats": stats, "recipes": recipes, "flags": flags,
+		"forage_taken": forage_taken, "blessing": blessing, "offerings": offerings}
 
 
 func load_data(d: Dictionary) -> void:
@@ -99,6 +143,12 @@ func load_data(d: Dictionary) -> void:
 	ending_seen = bool(d.get("ending_seen", false))
 	for k in d.get("stats", {}):
 		stats[k] = int(d.stats[k])
+	for k in d.get("flags", {}):
+		flags[k] = bool(d.flags[k])
+	for k in d.get("forage_taken", {}):
+		forage_taken[k] = true
+	blessing = bool(d.get("blessing", false))
+	offerings = int(d.get("offerings", 0))
 	if d.has("recipes"):
 		recipes = []
 		for r in d.recipes:

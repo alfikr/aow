@@ -4,7 +4,7 @@ extends Node2D
 ## desa, interior toko. Menggambar pemandangan dan menjawab pertanyaan
 ## "bisa dilewati?", "ada apa di tile ini?", dan "apakah ini pintu keluar?".
 
-const SOLID_KINDS := ["building", "sleep", "bin", "water", "shop", "tree", "rock", "kitchen", "tv", "prop", "fence"]
+const SOLID_KINDS := ["building", "sleep", "bin", "water", "shop", "tree", "rock", "kitchen", "tv", "prop", "fence", "shrine", "chest"]
 ## Fitur yang tidak ikut menentukan "ada apa di tile ini" (hanya gambar).
 const VISUAL_KINDS := ["path", "floor", "overlay"]
 ## Fitur datar yang digambar lebih dulu (di bawah benda tinggi).
@@ -28,6 +28,7 @@ func _ready() -> void:
 			set_area("mine")
 		queue_redraw())
 	Events.season_changed.connect(func(_s): queue_redraw())
+	Events.world_changed.connect(queue_redraw)
 	set_area(area_id)
 
 
@@ -105,7 +106,11 @@ func feature_at(c: Vector2i) -> Dictionary:
 
 func exit_at(c: Vector2i) -> Dictionary:
 	var f := feature_at(c)
-	return f if f.get("kind", "") == "exit" else {}
+	if f.get("kind", "") != "exit":
+		return {}
+	if f.raw.has("requires_flag") and not Progress.flag(str(f.raw.requires_flag)):
+		return {}       # jalan rahasia belum terbuka
+	return f
 
 
 ## Alasan pintu tidak bisa dimasuki sekarang ("" bila boleh).
@@ -153,7 +158,8 @@ func _draw() -> void:
 	var T := Layout.TILE
 	var font := ThemeDB.fallback_font
 	var full := Rect2(0, 0, Layout.COLS * T, Layout.ROWS * T)
-	var ground_tex := Sprites.tex_season(str(area.get("ground_tile", "")))
+	var ground_name := str(area.get("ground_tile", ""))
+	var ground_tex := Sprites.tex(ground_name) if ground_name == "grass_forest" else Sprites.tex_season(ground_name)
 	if ground_tex != null:
 		draw_texture_rect(ground_tex, full, true)
 	else:
@@ -176,13 +182,20 @@ func _draw_feature(f: Dictionary, font: Font) -> void:
 	# hiasan musiman; bunga hanya di musim semi dan panas
 	if raw.has("season") and int(raw.season) != Clock.season:
 		return
+	if raw.has("requires_flag") and not Progress.flag(str(raw.requires_flag)):
+		return
+	if f.kind == "forage" and Progress.forage_taken.has("%d,%d" % [f.rect.position.x, f.rect.position.y]):
+		return
 	if f.kind == "overlay" and str(raw.get("sprite", "")).begins_with("flowers") and Clock.season >= 2:
 		return
 	if f.kind == "water" and raw.get("tile", "") == "water" and Sprites.tex("water") != null:
 		_draw_water(r, bool(raw.get("season_fixed", false)))
 		return
 	var name: String = raw.get("sprite", raw.get("tile", ""))
-	var tex := Sprites.tex_season(name) if name != "" else null
+	if raw.has("flag") and raw.has("sprite_done") and Progress.flag(str(raw.flag)):
+		name = str(raw.sprite_done)          # mis. peti yang sudah dibuka
+	var fixed: bool = raw.get("season_fixed", false)
+	var tex := (Sprites.tex(name) if fixed else Sprites.tex_season(name)) if name != "" else null
 	if tex != null:
 		if raw.has("tile"):
 			draw_texture_rect(tex, r, true)

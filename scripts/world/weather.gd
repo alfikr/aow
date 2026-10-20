@@ -31,7 +31,8 @@ static func kind_for(indoor: bool, weather: int, season: int, minutes: float) ->
 
 
 func _process(delta: float) -> void:
-	var k := kind_for(world.is_indoor(), Clock.weather, Clock.season, Clock.minutes)
+	var forced := str(world.area.get("fx", ""))      # mis. kunang-kunang abadi di hutan rahasia
+	var k := forced if forced != "" else kind_for(world.is_indoor(), Clock.weather, Clock.season, Clock.minutes)
 	if k != kind:
 		_reset(k)
 	if kind == "":

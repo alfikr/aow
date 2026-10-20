@@ -662,6 +662,141 @@ def make_doormat():
     cv.save("mat")
 
 
+# ------------------------------------------------- batu kecil/besar & hutan rahasia
+def _boulder_shape(cv, size, light=hx("a0a0ac"), mid=hx("8a8a96"), dark=hx("6e6e78")):
+    cv.d.ellipse([1, size // 3, size - 2, size - 2], fill=dark)
+    cv.d.ellipse([2, size // 6, size - 3, size - size // 6 - 2], fill=mid)
+    cv.d.ellipse([4, size // 6 + 1, size - size // 3, size // 2 + 4], fill=light)
+    cv.hline(7, size // 6 + 2, 6, hx("d0d0da"))
+
+
+def make_rock_small():
+    cv = Canvas(16, 16)
+    cv.d.ellipse([1, 8, 8, 14], fill=hx("7a7a86"))
+    cv.d.ellipse([2, 7, 7, 12], fill=hx("9a9aa6"))
+    cv.d.ellipse([8, 5, 14, 12], fill=hx("8a8a96"))
+    cv.d.ellipse([9, 4, 13, 9], fill=hx("a8a8b4"))
+    cv.d.ellipse([5, 10, 10, 14], fill=hx("8a8a96"))
+    cv.hline(3, 8, 2, hx("d0d0da"))
+    cv.hline(10, 5, 2, hx("d0d0da"))
+    cv.px(12, 11, hx("5a8a4a"))
+    cv.px(3, 13, hx("5a8a4a"))
+    outline(cv, hx("1a1a22"))
+    cv.save("rock_small")
+
+
+def make_boulders():
+    def boulder(name, ore=None, vines=False):
+        cv = Canvas(32, 32)
+        _boulder_shape(cv, 30)
+        cv.d.ellipse([3, 12, 27, 28], outline=hx("5a5a66"))
+        cv.d.line([(14, 8), (16, 13), (13, 18), (15, 24)], fill=hx("55555e"), width=1)    # retakan
+        cv.d.line([(16, 13), (21, 15)], fill=hx("55555e"), width=1)
+        for mx, my in ((6, 14), (7, 15), (22, 22), (23, 23), (10, 24)):                    # lumut
+            cv.px(mx, my, hx("5a8a4a"))
+            cv.px(mx + 1, my, hx("4a7a3a"))
+        if ore:
+            main, light = {"tembaga": (hx("c8782a"), hx("f0a050")), "perak": (hx("b8c4d8"), hx("f0f6ff")),
+                           "emas": (hx("e8b820"), hx("fff0a0"))}[ore]
+            for ox, oy in ((6, 10), (18, 9), (12, 18), (21, 19), (8, 22)):
+                cv.rect(ox, oy, 4, 3, main)
+                cv.px(ox, oy, light)
+                cv.px(ox + 1, oy, light)
+        if vines:
+            leaf, leaf_d = hx("3f8f3f"), hx("2c6a2c")
+            for vx in (7, 14, 22):
+                cv.d.line([(vx, 6), (vx + 1, 12), (vx - 1, 18), (vx, 24)], fill=leaf, width=1)
+                for vy in (10, 17, 22):
+                    cv.px(vx + 1, vy, leaf)
+                    cv.px(vx - 2, vy + 1, leaf_d)
+            for rx, ry in ((13, 13), (16, 16), (14, 19), (17, 12)):                       # rune bersinar
+                cv.px(rx, ry, hx("7ae8ff"))
+                cv.px(rx + 1, ry, hx("c8f6ff"))
+        outline(cv, hx("1a1a22"))
+        base = Canvas(32, 32)                                      # bayangan transparan di tanah
+        base.d.ellipse([2, 25, 29, 31], fill=(0, 0, 0, 70))
+        base.img.alpha_composite(cv.img)
+        base.save(name)
+
+    boulder("boulder")
+    boulder("boulder_sealed", vines=True)
+    for o in ("tembaga", "perak", "emas"):
+        boulder("boulder_" + o, ore=o)
+
+
+def make_grove_objects():
+    # patung Dewi Panen
+    cv = Canvas(16, 24)
+    stone, shade, light = hx("c8ccd4"), hx("9aa0aa"), hx("eef0f4")
+    cv.rect(2, 19, 12, 4, hx("8a8f9a"))
+    cv.hline(2, 19, 12, hx("b0b6c0"))
+    cv.rect(4, 16, 8, 3, hx("9aa0aa"))
+    cv.d.polygon([(4, 18), (5, 8), (11, 8), (12, 18)], fill=stone)              # jubah
+    cv.d.polygon([(4, 18), (5, 8), (8, 8), (8, 18)], fill=light)
+    cv.vline(10, 10, 8, shade)
+    cv.d.ellipse([5, 2, 10, 8], fill=stone)                                      # kepala
+    cv.d.ellipse([5, 1, 10, 4], fill=hx("9aa0aa"))                               # rambut
+    cv.px(6, 5, shade)
+    cv.px(9, 5, shade)
+    cv.rect(2, 9, 2, 6, stone)                                                   # tangan memegang gandum
+    cv.vline(1, 5, 9, hx("d8b840"))
+    for gy in (4, 6, 8):
+        cv.px(0, gy, hx("e8c850"))
+        cv.px(2, gy, hx("e8c850"))
+    cv.rect(12, 10, 2, 4, stone)
+    cv.d.ellipse([11, 8, 15, 11], fill=hx("c0e8ff"))                             # mangkuk cahaya
+    for fx, fc in ((3, hx("f090b0")), (7, hx("f0d040")), (11, hx("a8b8f4"))):
+        cv.px(fx, 22, fc)
+        cv.px(fx + 1, 21, fc)
+    outline(cv, hx("3a3e4a"))
+    cv.save("statue")
+
+    # peti harta
+    for name, open_ in (("chest", False), ("chest_open", True)):
+        cv = Canvas(16, 16)
+        cv.rect(2, 7, 12, 8, hx("8a5a30"))
+        cv.frame(2, 7, 12, 8, WOOD_D)
+        cv.vline(5, 7, 8, hx("c8b078"))
+        cv.vline(10, 7, 8, hx("c8b078"))
+        cv.rect(7, 9, 2, 3, hx("f0d040"))
+        if open_:
+            cv.rect(2, 2, 12, 5, hx("a8743e"))
+            cv.frame(2, 2, 12, 5, WOOD_D)
+            cv.rect(3, 6, 10, 2, hx("f0d040"))        # emas berkilau
+            for gx, gy in ((4, 5), (8, 4), (11, 6)):
+                cv.px(gx, gy, hx("fff6b0"))
+        else:
+            cv.rect(2, 4, 12, 4, hx("a8743e"))
+            cv.frame(2, 4, 12, 4, WOOD_D)
+            cv.vline(5, 4, 4, hx("c8b078"))
+            cv.vline(10, 4, 4, hx("c8b078"))
+            cv.hline(3, 5, 10, hx("c8925a"))
+        outline(cv, hx("2a1a10"))
+        cv.save(name)
+
+    # jamur hutan
+    cv = Canvas(16, 16)
+    for mx, my, r in ((4, 9, 4), (10, 7, 5), (8, 12, 3)):
+        cv.rect(mx - 1, my + 1, 3, 5, hx("f4ead0"))
+        cv.d.ellipse([mx - r, my - r + 1, mx + r, my + 1], fill=hx("d94a3d"))
+        cv.px(mx - 1, my - 1, hx("ffffff"))
+        cv.px(mx + 1, my - 2, hx("ffffff"))
+    outline(cv, hx("3a1a14"))
+    cv.save("jamur")
+
+    # herba langka
+    cv = Canvas(16, 16)
+    for hx_, hy in ((4, 6), (8, 4), (12, 7)):
+        cv.vline(hx_, hy + 2, 15 - hy - 2, hx("3f8f3f"))
+        cv.px(hx_ - 1, hy + 6, hx("5ccf62"))
+        cv.px(hx_ + 1, hy + 8, hx("5ccf62"))
+        cv.rect(hx_ - 1, hy - 1, 3, 3, hx("9a6ae0"))
+        cv.px(hx_, hy - 1, hx("d8b8ff"))
+    cv.hline(3, 14, 10, hx("2c6a2c"))
+    outline(cv, hx("1f3a22"))
+    cv.save("herba")
+
+
 if __name__ == "__main__":
     make_grass()
     make_grass_field()
@@ -695,5 +830,8 @@ if __name__ == "__main__":
     make_mine_objects()
     make_mine_entrance()
     make_doormat()
+    make_rock_small()
+    make_boulders()
+    make_grove_objects()
     make_crops()
     print("selesai")

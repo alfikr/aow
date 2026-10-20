@@ -12,6 +12,8 @@ signal open_dialog(npc_id: String)
 signal show_ending
 signal open_cook
 signal sfx(name: String)
+signal world_changed
+signal open_shrine
 signal open_shop
 
 ## Dipakai agar pemain tidak bergerak saat menu terbuka.
