@@ -21,7 +21,7 @@ func solid_at(area_id: String, c: Vector2i) -> bool:
 	var feats: Array = area.features
 	for i in range(feats.size() - 1, -1, -1):   # fitur paling atas menentukan (sama seperti World)
 		var f: Dictionary = feats[i]
-		if f.kind != "path" and f.kind != "floor" and rect_of(f.rect).has_point(c):
+		if not World.VISUAL_KINDS.has(f.kind) and rect_of(f.rect).has_point(c):
 			return World.SOLID_KINDS.has(f.kind)
 	return false
 
@@ -136,6 +136,57 @@ func _ready() -> void:
 	for cid in Data.crops:
 		if Data.crops[cid].seasons.is_empty():
 			bad("tanaman %s tanpa musim" % cid)
+
+
+	# --- sprite yang dirujuk data area harus ada
+	for id in Data.areas:
+		for f in Data.areas[id].features:
+			for key in ["sprite", "tile"]:
+				if f.has(key) and not ResourceLoader.exists("res://assets/sprites/%s.png" % f[key]):
+					bad("%s: sprite '%s' tidak ada" % [id, f[key]])
+	for cid in Data.crops:
+		if not ResourceLoader.exists("res://assets/sprites/crop_%s.png" % cid):
+			bad("tanaman %s tidak punya sprite crop_%s.png" % [cid, cid])
+
+	# --- keterjangkauan: dari tiap titik masuk, semua pintu & sel jadwal NPC bisa dicapai
+	for id in Data.areas:
+		if id == "mine":
+			continue
+		var entries: Array = []
+		for src in Data.areas:
+			for f in Data.areas[src].features:
+				if f.kind == "exit" and f.to == id:
+					entries.append(Vector2i(int(f.spawn[0]), int(f.spawn[1])))
+		if id == "farm":
+			entries.append(Vector2i(12, 14))
+		for start in entries:
+			var seen := {start: true}
+			var queue := [start]
+			var qi := 0
+			while qi < queue.size():
+				var c: Vector2i = queue[qi]
+				qi += 1
+				for d in [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]:
+					var n: Vector2i = c + d
+					if not seen.has(n) and not solid_at(id, n):
+						seen[n] = true
+						queue.append(n)
+			for f in Data.areas[id].features:
+				if f.kind != "exit":
+					continue
+				var r := rect_of(f.rect)
+				var ok := false
+				for x in r.size.x:
+					for y in r.size.y:
+						if seen.has(r.position + Vector2i(x, y)):
+							ok = true
+				if not ok:
+					bad("%s: pintu menuju %s tidak terjangkau dari titik masuk %s" % [id, f.to, start])
+			for nid in Data.npcs:
+				for e in Data.npcs[nid].schedule:
+					# toko: Mira berdiri di balik konter (area staf yang memang tertutup)
+					if e.area == id and id != "shop" and not seen.has(Vector2i(int(e.cell[0]), int(e.cell[1]))):
+						bad("%s: sel jadwal %s di %s tidak terjangkau dari %s" % [nid, e.cell, id, start])
 
 	print("HASIL: ", "LULUS" if problems == 0 else "%d MASALAH" % problems)
 	get_tree().quit(problems)

@@ -20,17 +20,19 @@ func _ready() -> void:
 	var ls: Livestock = main.get_node("Livestock")
 	var menu: Control = main.get_node("UI/Menu")
 
-	# peternakan dengan ladang
-	for x in range(11, 17):
-		for y in range(4, 8):
-			farm.till(Vector2i(x, y))
-	farm.plant(Vector2i(11, 4), "lobak")
-	farm.plant(Vector2i(12, 4), "kentang")
-	farm.plant(Vector2i(13, 4), "lobak")
-	farm.tiles[Vector2i(13, 4)].age = 4
-	farm.water(Vector2i(11, 4))
-	farm.water(Vector2i(12, 4))
-	player.cell = Vector2i(12, 8)
+	# peternakan dengan ladang: semua tanaman, tiap tahap pertumbuhan
+	var crops := ["lobak", "kentang", "tomat", "jagung", "labu"]
+	for row in crops.size():
+		var id: String = crops[row]
+		var days := Data.growth_days(id)
+		for col in 4:
+			var c := Vector2i(11 + col * 2, 4 + row * 2)
+			farm.till(c)
+			farm.plant(c, id)
+			farm.tiles[c].age = [0, int(days * 0.4), int(days * 0.8), days][col]
+			if col % 2 == 0:
+				farm.water(c)
+	player.cell = Vector2i(10, 13)
 	player.position = Vector2(player.cell * Layout.TILE)
 	player.facing = Vector2i.UP
 	Events.message.emit("Selamat datang! WASD jalan, Spasi pakai alat, E interaksi.")
@@ -97,6 +99,16 @@ func _ready() -> void:
 
 	player.travel("mine", [14, 12])
 	await _shot(out, "08_mine")
+
+	player.travel("lane", [14, 1])
+	main.get_node("Npcs").snap_all()
+	await _shot(out, "07b_lane")
+
+	# berdiri di belakang pohon (tajuk menutupi) dan di depannya
+	player.travel("farm", [12, 0])
+	player.cell = Vector2i(12, 0)
+	player.position = Vector2(player.cell * Layout.TILE)
+	await _shot(out, "07c_behind_tree")
 
 	player.travel("farm", [4, 4])
 	Clock.minutes = 20.0 * 60

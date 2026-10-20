@@ -4,6 +4,7 @@ Game simulasi pertanian 2D (Godot 4, GDScript), **terinspirasi** dari *Harvest M
 Proyek penggemar: dunia, nama, dan karakternya orisinal. Semua aset dibuat lewat kode dan bebas lisensi (CC0):
 - semua bangunan dan isi interiornya memakai sprite pixel-art (`tools/gen_sprites.py`);
 - pemain, 5 warga, ayam, sapi, dan anjing juga bersprite berarah dengan animasi jalan (`tools/gen_characters.py`);
+- dunia: tekstur rumput/jalan/pasir/air beranimasi, pohon, pagar, lampu (bercahaya malam hari), tanaman per tahap, tambang, dll. (`tools/gen_world.py`);
 - semua suara disintesis (`tools/gen_audio.py`).
 
 Tidak memakai aset game aslinya.
@@ -65,7 +66,7 @@ scripts/world/      World, Farm, Player, Livestock, Dog, Npcs, Fishing, Mine, ..
 scripts/            menu.gd (toko/inventori/dialog/dapur/jeda), hud.gd, title.gd
 data/          crops, animals, areas, npcs, items, fish, recipes, festivals (JSON)
 assets/audio/    efek suara & musik hasil sintesis (tools/gen_audio.py)
-assets/sprites/  sprite pixel-art bangunan, interior, karakter, dan hewan (tools/gen_sprites.py, tools/gen_characters.py)
+assets/sprites/  sprite pixel-art bangunan, interior, karakter, dan hewan (tools/gen_sprites.py, gen_characters.py, gen_world.py)
 docs/DESIGN.md Keputusan desain dan peta jalan
 ```
 Menambah tanaman, ikan, resep, atau warga cukup dengan mengedit berkas JSON di `data/`.

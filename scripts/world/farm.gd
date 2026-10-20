@@ -112,16 +112,35 @@ func _on_season_changed(season: int) -> void:
 	queue_redraw()
 
 
+## Tahap pertumbuhan untuk sprite: 0 benih, 1 tunas, 2 tumbuh, 3 siap panen.
+func growth_stage(crop: String, age: int) -> int:
+	var days := Data.growth_days(crop)
+	if age >= days:
+		return 3
+	var ratio := float(age) / float(days)
+	return 0 if ratio < 0.25 else (1 if ratio < 0.6 else 2)
+
+
 func _draw() -> void:
 	var T := Layout.TILE
+	var soil := Sprites.tex("soil")
 	for c in tiles:
 		var t: Dictionary = tiles[c]
 		var r := Rect2(Vector2(c) * T, Vector2(T, T))
-		draw_rect(r, Color(0.35, 0.22, 0.12) if t.watered else Color(0.5, 0.33, 0.18))
-		draw_rect(r, Color(0, 0, 0, 0.2), false, 1.0)
+		if soil != null:
+			draw_texture_rect_region(soil, r, Rect2((1 if t.watered else 0) * T, 0, T, T))
+		else:
+			draw_rect(r, Color(0.35, 0.22, 0.12) if t.watered else Color(0.5, 0.33, 0.18))
+			draw_rect(r, Color(0, 0, 0, 0.2), false, 1.0)
 		if t.crop == "":
 			continue
 		var days := Data.growth_days(t.crop)
+		var tex := Sprites.tex("crop_" + t.crop)
+		if tex != null:
+			var stage := growth_stage(t.crop, t.age)
+			draw_texture_rect_region(tex, Rect2(r.position + Vector2(0, T - 48), Vector2(T, 48)),
+				Rect2(stage * T, 0, T, 48))
+			continue
 		var growth := clampf(float(t.age) / float(days), 0.0, 1.0)
 		var center := r.position + Vector2(16, 20)
 		draw_line(center, center + Vector2(0, -6 - 10 * growth), Color(0.15, 0.55, 0.15), 3.0)

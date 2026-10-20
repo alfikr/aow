@@ -36,7 +36,7 @@ func generate() -> Dictionary:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = hash([Clock.total_days(), floor_n])
 	var shade := Color(0.2, 0.2, 0.24).darkened(0.05 * (floor_n - 1))
-	var feats: Array = [{"kind": "floor", "rect": [2, 2, 26, 12], "color": shade.to_html(false)}]
+	var feats: Array = [{"kind": "floor", "rect": [2, 2, 26, 12], "color": shade.to_html(false), "tile": "floor_cave"}]
 	var stairs := Vector2i(rng.randi_range(4, 25), rng.randi_range(3, 6))
 	for x in range(3, 27):
 		for y in range(3, 13):
@@ -48,10 +48,11 @@ func generate() -> Dictionary:
 			if c == stairs or (y >= 11 and x >= 12 and x <= 17):
 				continue
 			if roll < 0.2 and not broken.has(_key(c)):
-				feats.append({"kind": "rock", "rect": [x, y, 1, 1], "color": "7d7d85", "ore": ore})
+				feats.append({"kind": "rock", "rect": [x, y, 1, 1], "color": "7d7d85", "ore": ore,
+					"sprite": "rock_" + (ore if ore != "" else "plain")})
 	if floor_n < MAX_FLOOR:
 		feats.append({"kind": "exit", "rect": [stairs.x, stairs.y, 1, 1], "color": "111118", "label": "Turun",
-			"to": "mine", "spawn": [SPAWN.x, SPAWN.y], "floor": floor_n + 1})
+			"to": "mine", "spawn": [SPAWN.x, SPAWN.y], "floor": floor_n + 1, "sprite": "stairs_down"})
 	else:
 		feats.append({"kind": "building", "rect": [stairs.x, stairs.y, 1, 1], "color": "e6c200", "label": "Dasar"})
 	if floor_n == 1:

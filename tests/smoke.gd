@@ -444,6 +444,33 @@ func _ready() -> void:
 	dog._process(0.1)
 	check(dog.cell == Vector2i(3, 4) and not dog.face_right, "anjing menghadap kiri saat bergerak ke kiri")
 
+
+	# --- dekorasi dunia
+	world.set_area("farm")
+	var fence_c := Vector2i(12, 2)
+	check(not world.walkable(fence_c) and world.feature_at(fence_c).kind == "fence", "pagar ladang menghalangi")
+	check(not world.walkable(Vector2i(12, 1)), "pohon menghalangi")
+	check(world.walkable(Vector2i(6, 3)) and world.feature_at(Vector2i(6, 3)).is_empty(), "bunga (overlay) tidak menghalangi")
+	check(world.feature_at(Vector2i(27, 3)).get("kind", "") == "water", "daun teratai (overlay) tidak menutupi air untuk memancing")
+	var tall := world.draw_list.filter(func(f): return f.raw.get("overhead", false))
+	check(tall.size() > 8, "ada benda tinggi berlapis atas (%d)" % tall.size())
+	check(world.light_points().size() == 2, "dua tiang lampu bercahaya di peternakan")
+	var order_ok := true
+	var last_y := -1
+	for f in world.draw_list:
+		if not world._is_flat(f):
+			if f.rect.end.y < last_y:
+				order_ok = false
+			last_y = f.rect.end.y
+	check(order_ok, "benda tinggi digambar urut dari atas ke bawah")
+	world.set_area("beach")
+	check(world.walkable(Vector2i(16, 8)) and not world.walkable(Vector2i(16, 7)), "dermaga bisa dilewati di atas air")
+	check(world.feature_at(Vector2i(20, 8)).get("raw", {}).get("fish", "") == "beach", "air di ujung dermaga bisa dipancing")
+	world.set_area("village")
+	check(world.feature_at(Vector2i(23, 3)).get("kind", "") == "water" and not world.feature_at(Vector2i(23, 3)).raw.has("fish"), "air mancur bisa diisi tapi tidak bisa dipancing")
+	check(farm.growth_stage("lobak", 0) == 0 and farm.growth_stage("lobak", 2) == 1 and farm.growth_stage("lobak", 3) == 2 and farm.growth_stage("lobak", 4) == 3, "tahap tumbuh tanaman 0-3")
+	world.set_area("farm")
+
 	# dialog lewat menu
 	Inventory.add("crop:lobak")
 	menu.open_dialog("raka")
